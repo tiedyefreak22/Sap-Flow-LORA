@@ -14,11 +14,15 @@
 
 SYSTEM_THREAD(ENABLED)
 
+#define RFM95_CS 14
+#define RFM95_RST 15
+#define RFM95_INT 16
+
 // Singleton instance of the radio driver
-RH_RF95 driver(D6, D2);
+RH_RF95 driver(RFM95_CS, RFM95_INT);
 
 // Frequency is typically 868.0 or 915.0 in the Americas, or 433.0 in the EU
-float frequency = 868.0;
+float frequency = 915.0;
 
 // Class to manage message delivery and receipt, using the driver declared above
 RHReliableDatagram manager(driver, SERVER_ADDRESS);
@@ -26,7 +30,7 @@ RHReliableDatagram manager(driver, SERVER_ADDRESS);
 // Need this on Arduino Zero with SerialUSB port (eg RocketScream Mini Ultra Pro)
 //#define Serial SerialUSB
 
-void setup() 
+void setup()
 {
 	// Rocket Scream Mini Ultra Pro with the RFM95W only:
 	// Ensure serial flash is not interfering with radio communication on SPI bus
@@ -35,8 +39,8 @@ void setup()
 
 	Serial.begin(9600);
 
-	// Wait for a USB serial connection for up to 15 seconds
-	waitFor(Serial.isConnected, 15000);
+	while (!Serial) delay(1);
+  	delay(100);
 
 	if (!manager.init())
 		Serial.println("init failed");
@@ -84,11 +88,10 @@ void loop()
 			}
 
 			snprintf((char *)buf, sizeof(buf), "request=%d rssi=%d", request, driver.lastRssi());
-
+			Particle.publish(buf)
 			// Send a reply back to the originator client
 			if (!manager.sendtoWait(buf, strlen((char *)buf), from))
 				Serial.println("sendtoWait failed");
 		}
 	}
 }
-
