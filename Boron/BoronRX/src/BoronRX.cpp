@@ -1,28 +1,41 @@
-// Arduino9x_RX
-// -*- mode: C++ -*-
-// Example sketch showing how to create a simple messaging client (receiver)
-// with the RH_RF95 class. RH_RF95 class does not provide for addressing or
-// reliability, so you should only use RH_RF95 if you do not need the higher
-// level messaging abilities.
-// It is designed to work with the other example Arduino9x_TX
+/* 
+ * Project myProject
+ * Author: Your Name
+ * Date: 
+ * For comprehensive documentation and examples, please visit:
+ * https://docs.particle.io/firmware/best-practices/firmware-template/
+ */
 
+// Include Particle Device OS APIs
+#include "Particle.h"
 #include <SPI.h>
 #include <RH_RF95.h>
-#include "Particle.h"
 
-#define RFM95_CS D5
-#define RFM95_RST D6
+// Let Device OS manage the connection to the Particle Cloud
+SYSTEM_MODE(AUTOMATIC);
+
+// Run the application and system concurrently in separate threads
+SYSTEM_THREAD(ENABLED);
+
+// Show system, cloud connectivity, and application logs over USB
+// View logs with CLI using 'particle serial monitor --follow'
+// SerialLogHandler logHandler(LOG_LEVEL_INFO);
+
+#define RFM95_CS A5
+#define RFM95_RST D5
 #define RFM95_INT D2
-
-// Change to 434.0 or other frequency, must match RX's freq!
 #define RF95_FREQ 915.0
+char* temp_feather_1;
 
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
+// setup() runs once, when the device is first turned on
 void setup() {
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
+  //Particle.variable("temp_feather_1", &temp_feather_1, DOUBLE);
+  Particle.connect();
 
   Serial.begin(115200);
   delay(2000);
@@ -31,7 +44,7 @@ void setup() {
 
   // manual reset
   digitalWrite(RFM95_RST, LOW);
-  delay(10);
+  delay(100);
   digitalWrite(RFM95_RST, HIGH);
   delay(10);
 
@@ -48,12 +61,6 @@ void setup() {
     while (1);
   }
   Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
-
-  // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
-
-  // The default transmitter power is 13dBm, using PA_BOOST.
-  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
-  // you can set transmitter powers from 5 to 23 dBm:
   rf95.setTxPower(23, false);
 }
 
@@ -64,25 +71,26 @@ void loop() {
     uint8_t len = sizeof(buf);
 
     if (rf95.recv(buf, &len)) {
-      RH_RF95::printBuffer("Received: ", buf, len);
+      temp_feather_1 = (char*)buf;
+      //RH_RF95::printBuffer("Received: ", temp_feather_1, len);
       Serial.print("Got: ");
-      Serial.println((char*)buf);
-      if (Particle.connected()) {
-        Particle.publish("Got: ", (char*)buf);
-        Serial.print("Published data to cloud");
-      }
-      else {
-        Serial.print("Could not publish data to cloud");
-      }
+      Serial.println(temp_feather_1);
+      // if (Particle.connected()) {
+      //   bool success = Particle.publish("temp_f_1", temp_feather_1, WITH_ACK);
+      //   if (success) {
+      //     Serial.println("Published data to cloud");
+      //   }
+      // }
+      // else {
+      //   Serial.println("Could not publish data to cloud");
+      // }
       Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
 
       // Send a reply
         char radiopacket[20] = {' '};
-        sprintf(radiopacket, "Received %d", (char*)buf);
+        sprintf(radiopacket, temp_feather_1);
         rf95.send((uint8_t *)radiopacket, strlen(radiopacket)+1);
-        // uint8_t data[] = "And hello back to you";
-        // rf95.send(data, sizeof(data));
         delay(10);
         rf95.waitPacketSent();
         Serial.println("Sent a reply");

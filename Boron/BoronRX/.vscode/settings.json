@@ -4,7 +4,7 @@
     "files.associations": {
         "*.ino": "cpp"
     },
+    "particle.targetDevice": "penguin_aardvark",
     "particle.firmwareVersion": "4.2.0",
-    "particle.targetPlatform": "boron",
-    "particle.targetDevice": "penguin_aardvark"
+    "particle.targetPlatform": "boron"
 }
