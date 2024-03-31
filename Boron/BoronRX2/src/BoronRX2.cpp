@@ -10,6 +10,9 @@
 #include "Particle.h"
 #include <SPI.h>
 #include <RH_RF95.h>
+#include <RHReliableDatagram.h>
+#define CLIENT_ADDRESS 1
+#define SERVER_ADDRESS 2
 
 // Let Device OS manage the connection to the Particle Cloud
 SYSTEM_MODE(AUTOMATIC);
@@ -29,6 +32,7 @@ char* temp_feather_1;
 
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
+RHReliableDatagram manager(rf95, SERVER_ADDRESS);
 
 // setup() runs once, when the device is first turned on
 void setup() {
@@ -55,6 +59,10 @@ void setup() {
   }
   Serial.println("LoRa radio init OK!");
 
+  if (!manager.init())
+		Serial.println("Manager init failed");
+  Serial.println("Manager init OK!");
+
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
   if (!rf95.setFrequency(RF95_FREQ)) {
     Serial.println("setFrequency failed");
@@ -64,36 +72,40 @@ void setup() {
   rf95.setTxPower(23, false);
 }
 
+uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+
 void loop() {
-  if (rf95.available()) {
-    // Should be a message for us now
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+//   if (rf95.available()) {
+  if (manager.available()) {
+    //if (rf95.recv(buf, &len)) {
+    temp_feather_1 = (char*)buf;
+    // Wait for a message addressed to us from the client
     uint8_t len = sizeof(buf);
+    uint8_t from;
+    if (manager.recvfromAck(buf, &len, &from))
+    {
+        buf[len] = 0;
+        Serial.printlnf("got packet from 0x%02x rssi=%d %s", from, rf95.lastRssi(), temp_feather_1);
 
-    if (rf95.recv(buf, &len)) {
-      temp_feather_1 = (char*)buf;
-      //RH_RF95::printBuffer("Received: ", temp_feather_1, len);
-      Serial.print("Got: ");
-      Serial.println(temp_feather_1);
-      // if (Particle.connected()) {
-      //   bool success = Particle.publish("temp_f_1", temp_feather_1, WITH_ACK);
-      //   if (success) {
-      //     Serial.println("Published data to cloud");
-      //   }
-      // }
-      // else {
-      //   Serial.println("Could not publish data to cloud");
-      // }
-      Serial.print("RSSI: ");
-      Serial.println(rf95.lastRssi(), DEC);
+        int request = 0;
+        char *cp = strchr(temp_feather_1, '=');
+        if (cp) {
+            request = atoi(cp + 1);
+        }
 
-      // Send a reply
-        char radiopacket[20] = {' '};
-        sprintf(radiopacket, temp_feather_1);
-        rf95.send((uint8_t *)radiopacket, strlen(radiopacket)+1);
-        delay(10);
-        rf95.waitPacketSent();
-        Serial.println("Sent a reply");
+        snprintf(temp_feather_1, sizeof(buf), "request=%d rssi=%d", request, rf95.lastRssi());
+
+        // Send a reply back to the originator client
+        if (!manager.sendtoWait(buf, strlen(temp_feather_1), from))
+            Serial.println("sendtoWait failed");
+
+    //   // Send a reply
+    //     char radiopacket[20] = {' '};
+    //     sprintf(radiopacket, temp_feather_1);
+    //     rf95.send((uint8_t *)radiopacket, strlen(radiopacket)+1);
+    //     delay(10);
+    //     rf95.waitPacketSent();
+    //     Serial.println("Sent a reply");
     } else {
         Serial.println("Receive failed");
     }
