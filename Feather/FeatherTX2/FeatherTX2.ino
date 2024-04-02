@@ -1,11 +1,4 @@
-// Feather9x_TX
-// -*- mode: C++ -*-
-// Example sketch showing how to create a simple messaging client (transmitter)
-// with the RH_RF95 class. RH_RF95 class does not provide for addressing or
-// reliability, so you should only use RH_RF95 if you do not need the higher
-// level messaging abilities.
-// It is designed to work with the other example Feather9x_RX
-
+// f1 MAC: 98:76:B6:12:99:a5
 #include <SPI.h>
 #include <RH_RF95.h>
 #include <RHReliableDatagram.h>
