@@ -21445,7 +21445,6 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <part name="D3" library="microbuilder" deviceset="LED" device="0603" value="RED"/>
 <part name="R7" library="microbuilder" deviceset="RESISTOR" device="_0603_NOOUT" value="10K"/>
 <part name="GND20" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="U$8" library="adafruit_power" deviceset="VLIPO" device=""/>
 <part name="U$9" library="adafruit_power" deviceset="VLIPO" device=""/>
 <part name="C6" library="microbuilder" deviceset="CAP_CERAMIC" device="0805-NOOUTLINE" value="10uF"/>
 <part name="GND23" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -21523,29 +21522,27 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <part name="R14" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0805" package3d_urn="urn:adsk.eagle:package:23553/2" value="R of 2 Thermos"/>
 <part name="MS1" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="FEATHERWING" device="" package3d_urn="urn:adsk.eagle:package:6240959/1"/>
 <part name="U2" library="Particle-Devices" library_urn="urn:adsk.eagle:library:5952892" deviceset="BORON" device="" package3d_urn="urn:adsk.eagle:package:10606116/2"/>
-<part name="U$1" library="microbuilder" deviceset="FRAME_A4_ADAFRUIT" device=""/>
-<part name="U3" library="microbuilder" deviceset="RFM69HCW" device="_SMT" value="RFM69HCW"/>
-<part name="U4" library="microbuilder" deviceset="74HC4050D" device="TSSOP" value="74HC4050D"/>
-<part name="U$19" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U6" library="microbuilder" deviceset="RFM69HCW" device="_SMT" value="RFM69HCW"/>
+<part name="U7" library="microbuilder" deviceset="74HC4050D" device="TSSOP" value="74HC4050D"/>
 <part name="U$20" library="microbuilder" deviceset="GND" device=""/>
 <part name="C8" library="microbuilder" deviceset="CAP_CERAMIC" device="0805-NOOUTLINE" value="0.1uF"/>
-<part name="U5" library="microbuilder" deviceset="VREG_SOT23-5" device="" value="AP2112K-3.3"/>
+<part name="U8" library="microbuilder" deviceset="VREG_SOT23-5" device="" value="AP2112K-3.3"/>
 <part name="U$21" library="microbuilder" deviceset="VIN" device=""/>
 <part name="U$22" library="microbuilder" deviceset="GND" device=""/>
 <part name="C10" library="microbuilder" deviceset="CAP_CERAMIC" device="0805-NOOUTLINE" value="10uF"/>
 <part name="U$23" library="microbuilder" deviceset="3.3V" device=""/>
 <part name="U$24" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$25" library="microbuilder" deviceset="3.3V" device=""/>
-<part name="C11" library="microbuilder" deviceset="CAP_CERAMIC" device="0805-NOOUTLINE" value="10uF"/>
+<part name="C14" library="microbuilder" deviceset="CAP_CERAMIC" device="0805-NOOUTLINE" value="10uF"/>
 <part name="U$26" library="microbuilder" deviceset="GND" device=""/>
 <part name="R15" library="microbuilder" deviceset="RESISTOR" device="0805_NOOUTLINE" value="100K"/>
-<part name="X1" library="microbuilder" deviceset="SMACONNECTOR" device="_EDGE_UFL" value="uFL/SMA"/>
+<part name="X5" library="microbuilder" deviceset="SMACONNECTOR" device="_EDGE_UFL" value="uFL/SMA"/>
 <part name="U$27" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$28" library="microbuilder" deviceset="GND" device=""/>
-<part name="JP5" library="microbuilder" deviceset="HEADER-1X9" device="70MIL"/>
+<part name="JP8" library="microbuilder" deviceset="HEADER-1X9" device="70MIL"/>
 <part name="U$29" library="microbuilder" deviceset="VIN" device=""/>
 <part name="U$30" library="microbuilder" deviceset="GND" device=""/>
-<part name="JP6" library="microbuilder" deviceset="HEADER-1X5" device="70MIL"/>
+<part name="JP9" library="microbuilder" deviceset="HEADER-1X5" device="70MIL"/>
 <part name="R16" library="microbuilder" deviceset="RESISTOR" device="0805_NOOUTLINE" value="100K"/>
 <part name="U$31" library="microbuilder" deviceset="VIN" device=""/>
 <part name="JP7" library="microbuilder" deviceset="HEADER-1X1" device="ROUND"/>
@@ -21610,9 +21607,6 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 </instance>
 <instance part="GND20" gate="1" x="165.1" y="60.96" smashed="yes">
 <attribute name="VALUE" x="162.56" y="58.42" size="1.778" layer="96"/>
-</instance>
-<instance part="U$8" gate="G$1" x="162.56" y="91.44" smashed="yes">
-<attribute name="VALUE" x="161.036" y="92.456" size="1.27" layer="96"/>
 </instance>
 <instance part="U$9" gate="G$1" x="215.9" y="76.2" smashed="yes">
 <attribute name="VALUE" x="214.376" y="77.216" size="1.27" layer="96"/>
@@ -21867,22 +21861,13 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <instance part="U2" gate="U1" x="-53.34" y="7.62" smashed="yes">
 <attribute name="NAME" x="-63.5" y="-16.51" size="1.4224" layer="95" align="top-left"/>
 </instance>
-<instance part="U$1" gate="G$1" x="261.62" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="433.07" y="15.24" size="2.54" layer="94" font="vector"/>
-<attribute name="LAST_DATE_TIME" x="433.07" y="10.16" size="2.286" layer="94" font="vector"/>
-<attribute name="SHEET" x="492.125" y="10.16" size="2.54" layer="94" font="vector"/>
-<attribute name="AUTHOR" x="450.85" y="5.08" size="2.286" layer="94" font="vector"/>
-</instance>
-<instance part="U3" gate="G$1" x="401.32" y="96.52" smashed="yes">
+<instance part="U6" gate="G$1" x="401.32" y="96.52" smashed="yes">
 <attribute name="NAME" x="391.16" y="114.3" size="1.27" layer="95"/>
 <attribute name="VALUE" x="391.16" y="76.2" size="1.27" layer="95"/>
 </instance>
-<instance part="U4" gate="G$1" x="330.2" y="91.44" smashed="yes">
+<instance part="U7" gate="G$1" x="330.2" y="91.44" smashed="yes">
 <attribute name="NAME" x="322.58" y="114.3" size="1.27" layer="95"/>
 <attribute name="VALUE" x="322.58" y="68.58" size="1.27" layer="96"/>
-</instance>
-<instance part="U$19" gate="G$1" x="294.64" y="114.3" smashed="yes">
-<attribute name="VALUE" x="293.116" y="115.316" size="1.27" layer="96"/>
 </instance>
 <instance part="U$20" gate="G$1" x="294.64" y="68.58" smashed="yes">
 <attribute name="VALUE" x="293.116" y="66.04" size="1.27" layer="96"/>
@@ -21891,7 +21876,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <attribute name="NAME" x="292.35" y="92.69" size="1.27" layer="95" font="vector" rot="R90" align="center"/>
 <attribute name="VALUE" x="296.94" y="92.69" size="1.27" layer="96" font="vector" rot="R90" align="center"/>
 </instance>
-<instance part="U5" gate="G$1" x="419.1" y="139.7" smashed="yes">
+<instance part="U8" gate="G$1" x="419.1" y="139.7" smashed="yes">
 <attribute name="NAME" x="411.48" y="145.796" size="1.27" layer="95"/>
 <attribute name="VALUE" x="411.48" y="132.08" size="1.27" layer="95"/>
 </instance>
@@ -21914,7 +21899,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <instance part="U$25" gate="G$1" x="441.96" y="101.6" smashed="yes">
 <attribute name="VALUE" x="440.436" y="102.616" size="1.27" layer="96"/>
 </instance>
-<instance part="C11" gate="G$1" x="441.96" y="88.9" smashed="yes">
+<instance part="C14" gate="G$1" x="441.96" y="88.9" smashed="yes">
 <attribute name="NAME" x="439.67" y="90.15" size="1.27" layer="95" font="vector" rot="R90" align="center"/>
 <attribute name="VALUE" x="444.26" y="90.15" size="1.27" layer="96" font="vector" rot="R90" align="center"/>
 </instance>
@@ -21925,7 +21910,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <attribute name="NAME" x="396.24" y="142.24" size="1.27" layer="95" font="vector" align="center"/>
 <attribute name="VALUE" x="396.24" y="139.7" size="1.016" layer="96" font="vector" ratio="15" align="center"/>
 </instance>
-<instance part="X1" gate="G$1" x="421.64" y="73.66" smashed="yes" rot="R270">
+<instance part="X5" gate="G$1" x="421.64" y="73.66" smashed="yes" rot="R270">
 <attribute name="NAME" x="424.18" y="66.04" size="1.27" layer="95" rot="R270"/>
 <attribute name="VALUE" x="421.64" y="66.04" size="1.27" layer="95" rot="R270"/>
 </instance>
@@ -21935,7 +21920,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <instance part="U$28" gate="G$1" x="411.48" y="63.5" smashed="yes">
 <attribute name="VALUE" x="409.956" y="60.96" size="1.27" layer="96"/>
 </instance>
-<instance part="JP5" gate="A" x="490.22" y="114.3" smashed="yes">
+<instance part="JP8" gate="A" x="490.22" y="114.3" smashed="yes">
 <attribute name="NAME" x="483.87" y="127.635" size="1.778" layer="95"/>
 <attribute name="VALUE" x="483.87" y="99.06" size="1.778" layer="96"/>
 </instance>
@@ -21945,7 +21930,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <instance part="U$30" gate="G$1" x="464.82" y="119.38" smashed="yes">
 <attribute name="VALUE" x="463.296" y="116.84" size="1.27" layer="96"/>
 </instance>
-<instance part="JP6" gate="A" x="490.22" y="76.2" smashed="yes">
+<instance part="JP9" gate="A" x="490.22" y="76.2" smashed="yes">
 <attribute name="NAME" x="483.87" y="84.455" size="1.778" layer="95"/>
 <attribute name="VALUE" x="483.87" y="66.04" size="1.778" layer="96"/>
 </instance>
@@ -21971,7 +21956,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <busses>
 </busses>
 <nets>
-<net name="GND" class="0">
+<net name="GND1" class="0">
 <segment>
 <wire x1="223.52" y1="68.58" x2="231.14" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="BATT" gate="G$1" pin="1"/>
@@ -22105,7 +22090,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <pinref part="R14" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="U4" gate="G$1" pin="GND"/>
+<pinref part="U7" gate="G$1" pin="GND"/>
 <pinref part="U$20" gate="G$1" pin="GND"/>
 <wire x1="320.04" y1="73.66" x2="294.64" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="294.64" y1="73.66" x2="294.64" y2="71.12" width="0.1524" layer="91"/>
@@ -22114,7 +22099,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <junction x="294.64" y="73.66"/>
 </segment>
 <segment>
-<pinref part="U5" gate="G$1" pin="GND"/>
+<pinref part="U8" gate="G$1" pin="GND"/>
 <pinref part="U$22" gate="G$1" pin="GND"/>
 <wire x1="408.94" y1="137.16" x2="388.62" y2="137.16" width="0.1524" layer="91"/>
 <wire x1="388.62" y1="137.16" x2="388.62" y2="134.62" width="0.1524" layer="91"/>
@@ -22124,48 +22109,48 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <junction x="388.62" y="134.62"/>
 </segment>
 <segment>
-<pinref part="U3" gate="G$1" pin="GND@3"/>
+<pinref part="U6" gate="G$1" pin="GND@3"/>
 <pinref part="U$24" gate="G$1" pin="GND"/>
 <wire x1="388.62" y1="86.36" x2="370.84" y2="86.36" width="0.1524" layer="91"/>
 <wire x1="370.84" y1="86.36" x2="370.84" y2="83.82" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="GND@2"/>
+<pinref part="U6" gate="G$1" pin="GND@2"/>
 <wire x1="388.62" y1="104.14" x2="370.84" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="370.84" y1="104.14" x2="370.84" y2="86.36" width="0.1524" layer="91"/>
 <junction x="370.84" y="86.36"/>
 </segment>
 <segment>
-<pinref part="C11" gate="G$1" pin="2"/>
+<pinref part="C14" gate="G$1" pin="2"/>
 <pinref part="U$26" gate="G$1" pin="GND"/>
 <wire x1="441.96" y1="86.36" x2="441.96" y2="83.82" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="GND@1"/>
+<pinref part="U6" gate="G$1" pin="GND@1"/>
 <wire x1="414.02" y1="88.9" x2="436.88" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="436.88" y1="88.9" x2="436.88" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="436.88" y1="83.82" x2="441.96" y2="83.82" width="0.1524" layer="91"/>
 <junction x="441.96" y="83.82"/>
 </segment>
 <segment>
-<pinref part="X1" gate="G$1" pin="GND2"/>
+<pinref part="X5" gate="G$1" pin="GND2"/>
 <pinref part="U$27" gate="G$1" pin="GND"/>
 <wire x1="429.26" y1="71.12" x2="431.8" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="431.8" y1="71.12" x2="431.8" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="X1" gate="G$1" pin="GND1"/>
+<pinref part="X5" gate="G$1" pin="GND1"/>
 <wire x1="429.26" y1="76.2" x2="431.8" y2="76.2" width="0.1524" layer="91"/>
 <wire x1="431.8" y1="76.2" x2="431.8" y2="71.12" width="0.1524" layer="91"/>
 <junction x="431.8" y="71.12"/>
 </segment>
 <segment>
-<pinref part="X1" gate="G$1" pin="GND4"/>
+<pinref part="X5" gate="G$1" pin="GND4"/>
 <pinref part="U$28" gate="G$1" pin="GND"/>
 <wire x1="414.02" y1="71.12" x2="411.48" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="411.48" y1="71.12" x2="411.48" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="X1" gate="G$1" pin="GND3"/>
+<pinref part="X5" gate="G$1" pin="GND3"/>
 <wire x1="414.02" y1="76.2" x2="411.48" y2="76.2" width="0.1524" layer="91"/>
 <wire x1="411.48" y1="76.2" x2="411.48" y2="71.12" width="0.1524" layer="91"/>
 <junction x="411.48" y="71.12"/>
 </segment>
 <segment>
 <pinref part="U$30" gate="G$1" pin="GND"/>
-<pinref part="JP5" gate="A" pin="2"/>
+<pinref part="JP8" gate="A" pin="2"/>
 <wire x1="464.82" y1="121.92" x2="487.68" y2="121.92" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -22245,11 +22230,6 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 </net>
 <net name="VLIPO" class="0">
 <segment>
-<wire x1="157.48" y1="88.9" x2="162.56" y2="88.9" width="0.1524" layer="91"/>
-<pinref part="U$8" gate="G$1" pin="VLIPO"/>
-<pinref part="X4" gate="G$1" pin="BAT"/>
-</segment>
-<segment>
 <pinref part="U$9" gate="G$1" pin="VLIPO"/>
 <pinref part="C6" gate="G$1" pin="1"/>
 </segment>
@@ -22261,6 +22241,10 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <segment>
 <pinref part="U$13" gate="G$1" pin="VLIPO"/>
 <pinref part="C5" gate="G$1" pin="1"/>
+</segment>
+<segment>
+<wire x1="157.48" y1="88.9" x2="162.56" y2="88.9" width="0.1524" layer="91"/>
+<pinref part="X4" gate="G$1" pin="BAT"/>
 </segment>
 </net>
 <net name="!CE" class="0">
@@ -22324,14 +22308,17 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <pinref part="R11" gate="G$1" pin="1"/>
 </segment>
 </net>
-<net name="EN1" class="0">
+<net name="EN3" class="0">
 <segment>
-<pinref part="X4" gate="G$1" pin="EN1"/>
-<label x="116.84" y="78.74" size="1.778" layer="95"/>
-<wire x1="99.06" y1="78.74" x2="99.06" y2="68.58" width="0.1524" layer="91"/>
-<pinref part="SJ2" gate="G$1" pin="2"/>
-<wire x1="99.06" y1="68.58" x2="96.52" y2="68.58" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="78.74" x2="127" y2="78.74" width="0.1524" layer="91"/>
+<pinref part="U8" gate="G$1" pin="EN"/>
+<pinref part="R15" gate="G$1" pin="2"/>
+<wire x1="408.94" y1="139.7" x2="401.32" y2="139.7" width="0.1524" layer="91"/>
+<label x="403.86" y="139.7" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="487.68" y1="119.38" x2="472.44" y2="119.38" width="0.1524" layer="91"/>
+<label x="472.44" y="119.38" size="1.778" layer="95"/>
+<pinref part="JP8" gate="A" pin="3"/>
 </segment>
 </net>
 <net name="EN2" class="0">
@@ -22525,133 +22512,132 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 </net>
 <net name="3.3V" class="0">
 <segment>
-<pinref part="U4" gate="G$1" pin="VCC"/>
-<pinref part="U$19" gate="G$1" pin="3.3V"/>
+<pinref part="U8" gate="G$1" pin="OUT"/>
+<pinref part="U$23" gate="G$1" pin="3.3V"/>
+<wire x1="429.26" y1="142.24" x2="431.8" y2="142.24" width="0.1524" layer="91"/>
+<wire x1="431.8" y1="142.24" x2="431.8" y2="144.78" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U6" gate="G$1" pin="VDD"/>
+<pinref part="U$25" gate="G$1" pin="3.3V"/>
+<wire x1="414.02" y1="96.52" x2="441.96" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="441.96" y1="96.52" x2="441.96" y2="99.06" width="0.1524" layer="91"/>
+<pinref part="C14" gate="G$1" pin="1"/>
+<wire x1="441.96" y1="96.52" x2="441.96" y2="93.98" width="0.1524" layer="91"/>
+<junction x="441.96" y="96.52"/>
+</segment>
+<segment>
+<pinref part="U7" gate="G$1" pin="VCC"/>
 <wire x1="320.04" y1="109.22" x2="294.64" y2="109.22" width="0.1524" layer="91"/>
 <wire x1="294.64" y1="109.22" x2="294.64" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="C8" gate="G$1" pin="1"/>
 <wire x1="294.64" y1="109.22" x2="294.64" y2="96.52" width="0.1524" layer="91"/>
 <junction x="294.64" y="109.22"/>
 </segment>
-<segment>
-<pinref part="U5" gate="G$1" pin="OUT"/>
-<pinref part="U$23" gate="G$1" pin="3.3V"/>
-<wire x1="429.26" y1="142.24" x2="431.8" y2="142.24" width="0.1524" layer="91"/>
-<wire x1="431.8" y1="142.24" x2="431.8" y2="144.78" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="U3" gate="G$1" pin="VDD"/>
-<pinref part="U$25" gate="G$1" pin="3.3V"/>
-<wire x1="414.02" y1="96.52" x2="441.96" y2="96.52" width="0.1524" layer="91"/>
-<wire x1="441.96" y1="96.52" x2="441.96" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="C11" gate="G$1" pin="1"/>
-<wire x1="441.96" y1="96.52" x2="441.96" y2="93.98" width="0.1524" layer="91"/>
-<junction x="441.96" y="96.52"/>
-</segment>
 </net>
-<net name="RST_3V" class="0">
+<net name="RST_3V1" class="0">
 <segment>
 <wire x1="340.36" y1="93.98" x2="355.6" y2="93.98" width="0.1524" layer="91"/>
 <label x="342.9" y="93.98" size="1.778" layer="95"/>
-<pinref part="U4" gate="G$1" pin="3Y"/>
+<pinref part="U7" gate="G$1" pin="3Y"/>
 </segment>
 <segment>
 <wire x1="373.38" y1="91.44" x2="388.62" y2="91.44" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="RESET"/>
+<pinref part="U6" gate="G$1" pin="RESET"/>
 <label x="373.38" y="91.44" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="MOSI_3V" class="0">
+<net name="MOSI_3V1" class="0">
 <segment>
-<pinref part="U4" gate="G$1" pin="1Y"/>
+<pinref part="U7" gate="G$1" pin="1Y"/>
 <wire x1="340.36" y1="104.14" x2="355.6" y2="104.14" width="0.1524" layer="91"/>
 <label x="342.9" y="104.14" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="373.38" y1="99.06" x2="388.62" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="MOSI"/>
+<pinref part="U6" gate="G$1" pin="MOSI"/>
 <label x="373.38" y="99.06" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="SCK_3V" class="0">
+<net name="SCK_3V1" class="0">
 <segment>
-<pinref part="U4" gate="G$1" pin="2Y"/>
+<pinref part="U7" gate="G$1" pin="2Y"/>
 <wire x1="340.36" y1="99.06" x2="355.6" y2="99.06" width="0.1524" layer="91"/>
 <label x="342.9" y="99.06" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="373.38" y1="96.52" x2="388.62" y2="96.52" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="SCK"/>
+<pinref part="U6" gate="G$1" pin="SCK"/>
 <label x="373.38" y="96.52" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="CS_3V" class="0">
+<net name="CS_3V1" class="0">
 <segment>
 <wire x1="340.36" y1="88.9" x2="355.6" y2="88.9" width="0.1524" layer="91"/>
 <label x="342.9" y="88.9" size="1.778" layer="95"/>
-<pinref part="U4" gate="G$1" pin="4Y"/>
+<pinref part="U7" gate="G$1" pin="4Y"/>
 </segment>
 <segment>
 <wire x1="373.38" y1="93.98" x2="388.62" y2="93.98" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="NSS"/>
+<pinref part="U6" gate="G$1" pin="NSS"/>
 <label x="373.38" y="93.98" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="RST_5V" class="0">
+<net name="RST_5V1" class="0">
 <segment>
 <wire x1="320.04" y1="93.98" x2="304.8" y2="93.98" width="0.1524" layer="91"/>
 <label x="304.8" y="93.98" size="1.778" layer="95"/>
-<pinref part="U4" gate="G$1" pin="3A"/>
+<pinref part="U7" gate="G$1" pin="3A"/>
 </segment>
 <segment>
 <label x="472.44" y="104.14" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="9"/>
+<pinref part="JP8" gate="A" pin="9"/>
 <pinref part="R17" gate="G$1" pin="1"/>
 <wire x1="449.58" y1="114.3" x2="449.58" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="449.58" y1="104.14" x2="487.68" y2="104.14" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="MOSI_5V" class="0">
+<net name="MOSI_5V1" class="0">
 <segment>
-<pinref part="U4" gate="G$1" pin="1A"/>
+<pinref part="U7" gate="G$1" pin="1A"/>
 <wire x1="320.04" y1="104.14" x2="304.8" y2="104.14" width="0.1524" layer="91"/>
 <label x="304.8" y="104.14" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="487.68" y1="109.22" x2="472.44" y2="109.22" width="0.1524" layer="91"/>
 <label x="472.44" y="109.22" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="7"/>
+<pinref part="JP8" gate="A" pin="7"/>
 </segment>
 </net>
-<net name="SCK_5V" class="0">
+<net name="SCK_5V1" class="0">
 <segment>
-<pinref part="U4" gate="G$1" pin="2A"/>
+<pinref part="U7" gate="G$1" pin="2A"/>
 <wire x1="320.04" y1="99.06" x2="304.8" y2="99.06" width="0.1524" layer="91"/>
 <label x="304.8" y="99.06" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="487.68" y1="114.3" x2="472.44" y2="114.3" width="0.1524" layer="91"/>
 <label x="472.44" y="114.3" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="5"/>
+<pinref part="JP8" gate="A" pin="5"/>
 </segment>
 </net>
-<net name="CS_5V" class="0">
+<net name="CS_5V1" class="0">
 <segment>
 <wire x1="304.8" y1="88.9" x2="320.04" y2="88.9" width="0.1524" layer="91"/>
 <label x="304.8" y="88.9" size="1.778" layer="95"/>
-<pinref part="U4" gate="G$1" pin="4A"/>
+<pinref part="U7" gate="G$1" pin="4A"/>
 </segment>
 <segment>
 <wire x1="457.2" y1="106.68" x2="487.68" y2="106.68" width="0.1524" layer="91"/>
 <label x="472.44" y="106.68" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="8"/>
+<pinref part="JP8" gate="A" pin="8"/>
 <pinref part="R16" gate="G$1" pin="1"/>
 <wire x1="457.2" y1="106.68" x2="457.2" y2="114.3" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="VIN" class="0">
+<net name="VIN1" class="0">
 <segment>
-<pinref part="U5" gate="G$1" pin="IN"/>
+<pinref part="U8" gate="G$1" pin="IN"/>
 <pinref part="U$21" gate="G$1" pin="VIN"/>
 <wire x1="408.94" y1="142.24" x2="388.62" y2="142.24" width="0.1524" layer="91"/>
 <wire x1="388.62" y1="142.24" x2="388.62" y2="144.78" width="0.1524" layer="91"/>
@@ -22664,7 +22650,7 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 </segment>
 <segment>
 <pinref part="U$29" gate="G$1" pin="VIN"/>
-<pinref part="JP5" gate="A" pin="1"/>
+<pinref part="JP8" gate="A" pin="1"/>
 <wire x1="464.82" y1="127" x2="464.82" y2="124.46" width="0.1524" layer="91"/>
 <wire x1="464.82" y1="124.46" x2="487.68" y2="124.46" width="0.1524" layer="91"/>
 </segment>
@@ -22679,111 +22665,108 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <wire x1="449.58" y1="127" x2="449.58" y2="124.46" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="MISO_3V" class="0">
+<net name="MISO_3V1" class="0">
 <segment>
-<pinref part="U3" gate="G$1" pin="MISO"/>
+<pinref part="U6" gate="G$1" pin="MISO"/>
 <wire x1="388.62" y1="101.6" x2="373.38" y2="101.6" width="0.1524" layer="91"/>
 <label x="373.38" y="101.6" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="487.68" y1="111.76" x2="472.44" y2="111.76" width="0.1524" layer="91"/>
 <label x="472.44" y="111.76" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="6"/>
+<pinref part="JP8" gate="A" pin="6"/>
 </segment>
 </net>
-<net name="EN" class="0">
+<net name="N$18" class="0">
 <segment>
-<pinref part="U5" gate="G$1" pin="EN"/>
-<pinref part="R15" gate="G$1" pin="2"/>
-<wire x1="408.94" y1="139.7" x2="401.32" y2="139.7" width="0.1524" layer="91"/>
-<label x="403.86" y="139.7" size="1.778" layer="95"/>
-</segment>
-<segment>
-<wire x1="487.68" y1="119.38" x2="472.44" y2="119.38" width="0.1524" layer="91"/>
-<label x="472.44" y="119.38" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="3"/>
-</segment>
-</net>
-<net name="N$17" class="0">
-<segment>
-<pinref part="X1" gate="G$1" pin="ANT"/>
+<pinref part="X5" gate="G$1" pin="ANT"/>
 <wire x1="414.02" y1="86.36" x2="421.64" y2="86.36" width="0.1524" layer="91"/>
 <wire x1="421.64" y1="86.36" x2="421.64" y2="81.28" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="ANT"/>
+<pinref part="U6" gate="G$1" pin="ANT"/>
 <pinref part="JP7" gate="G$1" pin="1"/>
 <junction x="421.64" y="86.36"/>
 </segment>
 </net>
-<net name="DIO3" class="0">
+<net name="DIO6" class="0">
 <segment>
 <wire x1="472.44" y1="76.2" x2="487.68" y2="76.2" width="0.1524" layer="91"/>
 <label x="472.44" y="76.2" size="1.778" layer="95"/>
-<pinref part="JP6" gate="A" pin="3"/>
+<pinref part="JP9" gate="A" pin="3"/>
 </segment>
 <segment>
 <wire x1="414.02" y1="91.44" x2="429.26" y2="91.44" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="DIO3"/>
+<pinref part="U6" gate="G$1" pin="DIO3"/>
 <label x="416.56" y="91.44" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="DIO0" class="0">
+<net name="DIO7" class="0">
 <segment>
 <wire x1="429.26" y1="99.06" x2="414.02" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="DIO0"/>
+<pinref part="U6" gate="G$1" pin="DIO0"/>
 <label x="416.56" y="99.06" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="487.68" y1="116.84" x2="472.44" y2="116.84" width="0.1524" layer="91"/>
 <label x="472.44" y="116.84" size="1.778" layer="95"/>
-<pinref part="JP5" gate="A" pin="4"/>
+<pinref part="JP8" gate="A" pin="4"/>
 </segment>
 </net>
-<net name="DIO2" class="0">
+<net name="DIO8" class="0">
 <segment>
 <wire x1="487.68" y1="78.74" x2="472.44" y2="78.74" width="0.1524" layer="91"/>
 <label x="472.44" y="78.74" size="1.778" layer="95"/>
-<pinref part="JP6" gate="A" pin="2"/>
+<pinref part="JP9" gate="A" pin="2"/>
 </segment>
 <segment>
 <wire x1="429.26" y1="104.14" x2="414.02" y2="104.14" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="DIO2"/>
+<pinref part="U6" gate="G$1" pin="DIO2"/>
 <label x="416.56" y="104.14" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="DIO1" class="0">
+<net name="DIO9" class="0">
 <segment>
 <wire x1="487.68" y1="81.28" x2="472.44" y2="81.28" width="0.1524" layer="91"/>
 <label x="472.44" y="81.28" size="1.778" layer="95"/>
-<pinref part="JP6" gate="A" pin="1"/>
+<pinref part="JP9" gate="A" pin="1"/>
 </segment>
 <segment>
 <wire x1="429.26" y1="101.6" x2="414.02" y2="101.6" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="DIO1"/>
+<pinref part="U6" gate="G$1" pin="DIO1"/>
 <label x="416.56" y="101.6" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="DIO5" class="0">
+<net name="DIO10" class="0">
 <segment>
 <wire x1="487.68" y1="71.12" x2="472.44" y2="71.12" width="0.1524" layer="91"/>
 <label x="472.44" y="71.12" size="1.778" layer="95"/>
-<pinref part="JP6" gate="A" pin="5"/>
+<pinref part="JP9" gate="A" pin="5"/>
 </segment>
 <segment>
 <wire x1="388.62" y1="88.9" x2="373.38" y2="88.9" width="0.1524" layer="91"/>
-<pinref part="U3" gate="G$1" pin="DIO5"/>
+<pinref part="U6" gate="G$1" pin="DIO5"/>
 <label x="373.38" y="88.9" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="DIO4" class="0">
+<net name="DIO11" class="0">
 <segment>
-<pinref part="U3" gate="G$1" pin="DIO4"/>
+<pinref part="U6" gate="G$1" pin="DIO4"/>
 <wire x1="414.02" y1="93.98" x2="429.26" y2="93.98" width="0.1524" layer="91"/>
 <label x="416.56" y="93.98" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="472.44" y1="73.66" x2="487.68" y2="73.66" width="0.1524" layer="91"/>
 <label x="472.44" y="73.66" size="1.778" layer="95"/>
-<pinref part="JP6" gate="A" pin="4"/>
+<pinref part="JP9" gate="A" pin="4"/>
+</segment>
+</net>
+<net name="EN1" class="0">
+<segment>
+<pinref part="X4" gate="G$1" pin="EN1"/>
+<label x="116.84" y="78.74" size="1.778" layer="95"/>
+<wire x1="99.06" y1="78.74" x2="99.06" y2="68.58" width="0.1524" layer="91"/>
+<pinref part="SJ2" gate="G$1" pin="2"/>
+<wire x1="99.06" y1="68.58" x2="96.52" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="78.74" x2="127" y2="78.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
@@ -22792,19 +22775,9 @@ Footprint and formfactor based on &lt;a href="https://www.adafruit.com/feather"&
 <errors>
 <approved hash="104,1,33.02,157.48,X2,VBUS,VUSB,,,"/>
 <approved hash="104,1,20.32,83.82,X3,PWR,N$2,,,"/>
-<approved hash="104,1,20.32,81.28,X3,GNDBREAK,GND,,,"/>
 <approved hash="104,1,127,101.6,X4,IN,VBUS,,,"/>
-<approved hash="104,1,157.48,68.58,X4,VSS,GND,,,"/>
-<approved hash="113,1,57.1754,78.74,1.5A,,,,,"/>
-<approved hash="113,1,72.4154,78.74,0.5A,,,,,"/>
-<approved hash="113,1,64.7954,78.74,1A,,,,,"/>
-<approved hash="113,1,67.5361,22.6229,JP3,,,,,"/>
-<approved hash="113,1,53.5771,155.166,JP1,,,,,"/>
 <approved hash="113,1,107.908,68.58,SJ1,,,,,"/>
 <approved hash="113,1,95.2077,68.58,SJ2,,,,,"/>
-<approved hash="113,1,175.26,74.9554,THERM,,,,,"/>
-<approved hash="113,1,101.837,153.896,JP2,,,,,"/>
-<approved hash="113,1,101.837,166.596,JP4,,,,,"/>
 </errors>
 </schematic>
 </drawing>
