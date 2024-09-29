@@ -14,10 +14,13 @@
 #include <fstream>
 
 #define SAMPLES 2048  // Number of samples to capture in each chunk
-//#define DEFAULT_SAMPLE_RATE 1000000  // 1.0 MSPS
-//#define DEFAULT_FREQUENCY  868000000 // 868 MHz (LoRA)
-#define DEFAULT_SAMPLE_RATE 2048000  // 2.048 MSPS
-#define DEFAULT_FREQUENCY  1090000000 // 1.09 GHz (ADS-B)
+#define THRESHOLD 1000 // Magnitude threshold for peak detection
+double NOISE_THRESHOLD = 15.0; // Threshold for detecting meaningful signals (adjust according to your environment)
+
+#define DEFAULT_SAMPLE_RATE 1000000  // 1.0 MSPS
+#define DEFAULT_FREQUENCY  915000000 // 868 MHz (LoRA)
+//#define DEFAULT_SAMPLE_RATE 2048000  // 2.048 MSPS
+//#define DEFAULT_FREQUENCY  1090000000 // 1.09 GHz (ADS-B)
 //#define DEFAULT_SAMPLE_RATE 2048000  // 2.048 MSPS
 //#define DEFAULT_FREQUENCY  94100000 // 94.1 MHz (Local Radio)
 
@@ -93,29 +96,59 @@ fftw_complex *analyze_time_frequency(uint8_t *buffer) {
     return out;
 }
 
-// 3. Signal Separation
-// Pseudo-code
-// void separate_collisions(fftw_complex *frequency_data, int N) {
-//     // Step 3a: Identify different signal components based on frequency peaks
-//     for (int i = 0; i < N; i++) {
-//         if (is_peak(frequency_data[i])) {
-//             // Step 3b: Separate each signal component based on time-frequency shifts
-//             // You can use cross-correlation to determine timing offsets.
-//             double time_offset = calculate_time_offset(frequency_data[i]);
-//             double frequency_shift = calculate_frequency_shift(frequency_data[i]);
+// 3. Signal separation and inverse FFT back to time domain, then demodulate
+fftw_complex *separate_collisions(fftw_complex *frequency_data) {
+    // Step 3a: Identify different signal components based on frequency peak magnitudes
+    for (uint32_t peak_index = 0; peak_index < SAMPLES; peak_index++) {
+        double magnitude = sqrt(frequency_data[peak_index][0] * frequency_data[peak_index][0] + frequency_data[peak_index][1] * frequency_data[peak_index][1]);
+        if (magnitude > THRESHOLD) {
+            // printf("Peak detected at index %d with magnitude %f\n", peak_index, magnitude);
+            
+            // Step 3b: Separate each signal component based on time-frequency shifts
+            // You can use cross-correlation to determine timing offsets.
+            int i;
+//            double frequency_shift = peak_index * (DEFAULT_SAMPLE_RATE / SAMPLES);
+//            double time_offset = peak_index * (1.0 / SAMPLES); // Calculate frequency shift
+            double frequency_shift = 0.0;
+            double time_offset = 0.0;
 
-//             // Step 3c: Align the signals by compensating for time and frequency shifts
-//             align_signals(frequency_data[i], time_offset, frequency_shift);
-//         }
-//     }
-// }
+            // printf("Separating signal at frequency shift: %f\n", frequency_shift);
+            
+            // Step 3c: Align the signals by compensating for time and frequency shifts
+            // Dechirping by applying conjugate of ideal chirp
+            for (i = 0; i < SAMPLES; i++) {
+                frequency_data[i][0] *= cos(-2 * M_PI * frequency_shift * i);  // Real part
+                frequency_data[i][1] *= sin(-2 * M_PI * frequency_shift * i);  // Imaginary part
+            }
+        }
+    }
+    // Apply inverse FFT after dechirping to obtain symbol values
+    fftw_complex *demodulated_output = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * SAMPLES);
+    fftw_plan p = fftw_plan_dft_1d(SAMPLES, frequency_data, demodulated_output, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_execute(p);
 
-// 4. LoRa Demodulation
-// void lora_demodulate(fftw_complex *aligned_signal) {
-    // Step 4a: Correlate the aligned signal with known LoRa chirps
-    // Step 4b: Decode the symbols based on the frequency shifts
-    // Step 4c: Apply FEC (Forward Error Correction) to correct any errors
-// }
+    // Process `out` which now contains demodulated symbols
+    printf("Signal separated and demodulated successfully\n");
+
+    fftw_destroy_plan(p);
+    return demodulated_output;
+}
+
+// 4. Determine Symbol
+int determine_symbol(fftw_complex *demodulated_output) {
+    // Find the frequency bin with the maximum magnitude
+    int peak_index = 0;
+    double max_magnitude = 0;
+    for (int i = 0; i < SAMPLES; i++) {
+        double magnitude = sqrt(demodulated_output[i][0] * demodulated_output[i][0] + demodulated_output[i][1] * demodulated_output[i][1]);
+        if (magnitude > max_magnitude) {
+            max_magnitude = magnitude;
+            peak_index = i;
+        }
+    }
+    printf("Demodulated symbol value: %d\n", peak_index);
+    return peak_index;
+ }
 
 // 5. Error Correction & Decoding
 // AlignTrack also uses error correction mechanisms like FEC (Forward Error Correction)
@@ -133,10 +166,7 @@ void callback(unsigned char *buf, uint32_t len, void *ctx) {
 
     double rms_power = sqrt(power_sum / len);  // RMS power
 
-    // Threshold for detecting meaningful signals (adjust according to your environment)
-    double noise_threshold = 3.0;
-
-    if (rms_power > noise_threshold) {
+    if (rms_power > NOISE_THRESHOLD) {
         printf("Received %u bytes of data with power: %f\n", len, rms_power);
 
         // Process and report the data
@@ -154,17 +184,17 @@ void callback(unsigned char *buf, uint32_t len, void *ctx) {
             double imag = frequency_data[i][1];
             freq[i] = i * DEFAULT_SAMPLE_RATE / SAMPLES;  // Frequency axis
             magnitude[i] = sqrt(real*real + imag*imag);  // Magnitude
-            printf("Real: %f, Imag: %f, Mag: %f\n", real, imag, magnitude[i]);
+            //printf("Real: %f, Imag: %f, Mag: %f\n", real, imag, magnitude[i]);
         }
 
         // Save data to file
         save_data_to_file("/Users/kevinhardin/Documents/fft_output.dat", freq, magnitude, SAMPLES / 2);
 
         // Separate the colliding signals
-        // separate_collisions(frequency_data, SAMPLES);
+        fftw_complex *iout = separate_collisions(frequency_data);
 
         // Demodulate the separated signals
-        // lora_demodulate(frequency_data);
+        int symbol = determine_symbol(iout);
         
         // Error Correction & Decoding
     }
@@ -206,7 +236,7 @@ void loop() {
     rtlsdr_close(dev);
 }
 
-int main() {
-    setup();
-    loop();
-}
+//int main() {
+//    setup();
+//    loop();
+//}
