@@ -19,7 +19,7 @@ int sense1 = A0; // sensor signal pin 1
 int sense2 = A2; // sensor signal pin 2
 float val1 = 0.0;  // variable to store the value read
 float val2 = 0.0;  // variable to store the value read
-int REPORT_INT = 30.0; // interval at which to record and report data
+int REPORT_INT = 10.0; // interval at which to record and report data
 
 // Change to 434.0 or other frequency, must match RX's freq!
 #define RF95_FREQ 915.0
@@ -73,40 +73,6 @@ void setup() {
   // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
   // you can set transmitter powers from 5 to 23 dBm:
   rf95.setTxPower(23, false);
-
-  // SD Card Initialization
-  // see if the card is present and can be initialized:
-  if (!SD.begin(SD_CS)) {
-    Serial.println("Card init. failed!");
-    error(4);
-    while(1);
-  }
-  Serial.println("SD card OK");
-
-  File root = SD.open("/");
-  printDirectory(root, 0);
-  
-  char filename[15];
-  strcpy(filename, "/ANALOG00.TXT");
-  for (uint8_t i = 0; i < 100; i++) {
-    filename[7] = '0' + i/10;
-    filename[8] = '0' + i%10;
-    // create if does not exist, do not open existing, write, sync after write
-    if (! SD.exists(filename)) {
-      break;
-    }
-  }
-
-  logfile = SD.open(filename, FILE_WRITE);
-  if( ! logfile ) {
-    Serial.print("Couldnt create "); 
-    Serial.println(filename);
-    error(5);
-    while(1);
-  }
-  Serial.print("Writing to "); 
-  Serial.println(filename);
-  Serial.println("Ready!");
 }
 
 int16_t counter = 0;  // packet counter, we increment per xmission
@@ -123,20 +89,10 @@ void loop() {
 
   if (duration / 1000 >= REPORT_INT) {
     start = end;
-    val1 = analogRead(sense1);
-    // Read the data on pin A0 and log it to SD card and to serial
-    logfile.print("Sense1 = "); logfile.println(val1);
-    Serial.print("Sense1 = "); Serial.println(val1);
-
-    // save the output!
-    logfile.flush();
 
     // Gymnastics required to get analogRead val into float
     char radiopacket[20] = {' '};
-    int val1_int = (int) val1;
-    float val1_float = (abs(val1) - abs(val1_int)) * 100000;
-    int val1_fra = (int)val1_float;
-    sprintf(radiopacket, "%d.%d", val1_int, val1_fra);
+    sprintf(radiopacket, "%s", "hello world");
     
     itoa(counter++, radiopacket+13, 10);
     bool reply_flag = false;
@@ -180,61 +136,9 @@ void loop() {
         delay(rand_time * 1000);
       }
     // =============================== END BASIC TRANSMISSION ===============================
-
-    // =============================== DATAGRAM TRANSMISSION ===============================
-    // Serial.println("Sending to rf95_reliable_datagram_server");
-
-    // // Send a message to manager_server
-    // snprintf((char *)buf, sizeof(buf), "to server counter=%d", ++counter);
-
-    // if (manager.sendtoWait(buf, strlen((char *)buf), SERVER_ADDRESS))
-    // {
-    // 	// Now wait for a reply from the server
-    // 	uint8_t len = sizeof(buf);
-    // 	uint8_t from;
-    // 	if (manager.recvfromAckTimeout(buf, &len, 2000, &from))
-    // 	{
-    // 		buf[len] = 0;
-    // 		Serial.printf("got reply from 0x%02x rssi=%d %s", from, rf95.lastRssi(), (char *) buf);
-    // 	}
-    // 	else
-    // 	{
-    // 		Serial.println("No reply, is rf95_reliable_datagram_server running?");
-    // 	}
-    // }
-    // else
-    // 	Serial.println("sendtoWait failed");
-    //   error(6);
-    // delay(500);
-    // =============================== END DATAGRAM TRANSMISSION ===============================
     }
     digitalWrite(led, LOW);    // turn the LED off
   }
-}
-
-void printDirectory(File dir, int numTabs) {
-   while(true) {
-     
-     File entry =  dir.openNextFile();
-     if (! entry) {
-       // no more files
-       break;
-     }
-     for (uint8_t i=0; i<numTabs; i++) {
-       Serial.print('\t');
-     }
-     Serial.print(entry.name());
-     if (entry.isDirectory()) {
-       Serial.println("/");
-       printDirectory(entry, numTabs+1);
-     } else {
-       // files have sizes, directories do not
-       Serial.print("\t\t");
-       Serial.println(entry.size(), DEC);
-     }
-     entry.close();
-   }
-  
 }
 
 // blink out an error code
