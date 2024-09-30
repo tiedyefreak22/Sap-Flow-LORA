@@ -1,8 +1,12 @@
-/* 
- * AlignTrack Lora Mesh
- * Author: Kevin Hardin
- * Date: 9/18/24
- */
+//
+//  Aligntrack.h
+//  Aligntrack Lora Mesh
+//
+//  Created by Kevin Hardin on 9/29/24.
+//
+
+#ifndef Aligntrack_h
+#define Aligntrack_h
 
 #include <rtl-sdr.h>
 #include <stdio.h>
@@ -225,18 +229,4 @@ uint8_t *receive_rtl_sdr(rtlsdr_dev_t *dev) {
     return buffer;
 }
 
-// setup() runs once, when the device is first turned on
-void setup() {
-    init_rtl_sdr();
-}
-
-// loop() runs over and over again, as quickly as it can execute.
-void loop() {
-    uint8_t *buffer = receive_rtl_sdr(dev);
-    rtlsdr_close(dev);
-}
-
-//int main() {
-//    setup();
-//    loop();
-//}
+#endif /* Aligntrack_h */

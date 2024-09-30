@@ -1,13 +1,19 @@
 // main.cpp
 #include <iostream>
 #include "LoRaPHY.h"
+#include "Aligntrack.h"
 
 int main() {
     // Parameters for LoRa PHY layer
-    double rf_freq = 470e6;    // Carrier frequency
+    double rf_freq = 915e6;    // Carrier frequency
     int sf = 7;                // Spreading factor
     double bw = 125e3;         // Bandwidth
     double fs = 1e6;           // Sampling rate
+
+    init_rtl_sdr();
+
+    uint8_t *buffer = receive_rtl_sdr(dev);
+    rtlsdr_close(dev);
 
     // Initialize LoRaPHY object
     LoRaPHY phy(rf_freq, sf, bw, fs);

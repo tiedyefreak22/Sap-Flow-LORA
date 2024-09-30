@@ -64,13 +64,13 @@
 		BA27B53F2CA79BF300992AC7 /* libfftw3f_mpi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f_mpi.a; path = ../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_mpi.a; sourceTree = "<group>"; };
 		BA27B5402CA79BF300992AC7 /* libfftw3_mpi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3_mpi.a; path = ../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_mpi.a; sourceTree = "<group>"; };
 		BA27B5412CA79BF300992AC7 /* libfftw3l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3l.a; path = ../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l.a; sourceTree = "<group>"; };
+		BA2902DA2CAA253C009239B9 /* Aligntrack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Aligntrack.h; sourceTree = "<group>"; };
 		BAC471722CA9E5E60066548B /* LoRaPHY.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LoRaPHY.cpp; sourceTree = "<group>"; };
 		BAC471742CA9E73A0066548B /* LoRaPHY.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoRaPHY.h; sourceTree = "<group>"; };
 		BAC471752CA9E7650066548B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		BAC471772CA9E8260066548B /* libliquid.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libliquid.dylib; path = "../../../../../../usr/local/Cellar/liquid-dsp/1.6.0/lib/libliquid.dylib"; sourceTree = "<group>"; };
 		BAD5BC7F2CA9ED0000E38551 /* libmpi.40.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmpi.40.dylib; path = "../../../../../../usr/local/Cellar/open-mpi/5.0.3_1/lib/libmpi.40.dylib"; sourceTree = "<group>"; };
 		BAF33D012CA74AE000A9A482 /* Aligntrack Lora Mesh */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Aligntrack Lora Mesh"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BAF33D0B2CA74B5D00A9A482 /* AlignTrack_Lora_Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AlignTrack_Lora_Mesh.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +127,7 @@
 				BAC471752CA9E7650066548B /* main.cpp */,
 				BAC471742CA9E73A0066548B /* LoRaPHY.h */,
 				BAC471722CA9E5E60066548B /* LoRaPHY.cpp */,
+				BA2902DA2CAA253C009239B9 /* Aligntrack.h */,
 			);
 			path = LoRaPHY;
 			sourceTree = "<group>";
@@ -135,7 +136,6 @@
 			isa = PBXGroup;
 			children = (
 				BAC4717C2CA9EA9C0066548B /* LoRaPHY */,
-				BAF33D032CA74AE000A9A482 /* Aligntrack Lora Mesh */,
 				BAF33D022CA74AE000A9A482 /* Products */,
 				BA27B5312CA79BC200992AC7 /* Frameworks */,
 			);
@@ -147,14 +147,6 @@
 				BAF33D012CA74AE000A9A482 /* Aligntrack Lora Mesh */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		BAF33D032CA74AE000A9A482 /* Aligntrack Lora Mesh */ = {
-			isa = PBXGroup;
-			children = (
-				BAF33D0B2CA74B5D00A9A482 /* AlignTrack_Lora_Mesh.cpp */,
-			);
-			path = "Aligntrack Lora Mesh";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
