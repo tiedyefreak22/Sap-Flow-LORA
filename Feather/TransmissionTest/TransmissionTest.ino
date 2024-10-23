@@ -77,10 +77,10 @@ void setup() {
   rf95.setTxPower(23, false);
   rf95.setPreambleLength(8);
   rf95.setCodingRate4(5);
-  rf95.enableCrc();
+  // rf95.enableCrc();
   rf95.setSpreadingFactor(8);
   rf95.setSignalBandwidth(125E3);
-  rf95.setSyncWord(SYNC_WORD);
+  // rf95.setSyncWord(SYNC_WORD);
 }
 
 int16_t counter = 0;  // packet counter, we increment per xmission
