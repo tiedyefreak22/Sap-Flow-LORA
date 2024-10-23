@@ -19,7 +19,7 @@
 
 #define SAMPLES 2048  // Number of samples to capture in each chunk
 #define THRESHOLD 1000 // Magnitude threshold for peak detection
-double NOISE_THRESHOLD = 15.0; // Threshold for detecting meaningful signals (adjust according to your environment)
+double NOISE_THRESHOLD = 45.0; // Threshold for detecting meaningful signals (adjust according to your environment)
 
 #define DEFAULT_SAMPLE_RATE 1000000  // 1.0 MSPS
 #define DEFAULT_FREQUENCY  915000000 // 915 MHz (LoRA)
