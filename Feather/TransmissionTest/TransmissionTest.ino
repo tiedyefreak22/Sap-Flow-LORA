@@ -13,6 +13,8 @@
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2
 
+#define SYNC_WORD 0x34
+
 // Should these be switched to #define?
 int led = LED_BUILTIN;
 int sense1 = A0; // sensor signal pin 1
@@ -73,6 +75,12 @@ void setup() {
   // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
   // you can set transmitter powers from 5 to 23 dBm:
   rf95.setTxPower(23, false);
+  rf95.setPreambleLength(8);
+  rf95.setCodingRate4(5);
+  rf95.enableCrc();
+  rf95.setSpreadingFactor(8);
+  rf95.setSignalBandwidth(125E3);
+  rf95.setSyncWord(SYNC_WORD);
 }
 
 int16_t counter = 0;  // packet counter, we increment per xmission
