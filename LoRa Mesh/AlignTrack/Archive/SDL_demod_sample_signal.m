@@ -19,7 +19,6 @@ shift = 0;
 
 % RTL-SDR Parameters
 Fs = 1e6; % Sampling rate (adjust based on your LoRa signal)
-gain = 30; % Gain for RTL-SDR
 
 % RTL-SDR Setup
 radio = comm.SDRRTLReceiver('CenterFrequency', fc, ...

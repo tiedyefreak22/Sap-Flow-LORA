@@ -3,17 +3,13 @@ close all;
 clc;
 
 SDR = 0;
-AlignTrack = 0;
+AlignTrack = 1;
 
 % LoRa Parameters
 SF = 8; % Spreading factor
 M=2^SF; % no. of samples in one symbol
 BW = 125e3 ; % Bandwidth
-if SDR == 1
-    Fs = 2.1e6;  % sampling freq
-else
-    Fs = 10e6;
-end
+Fs = 1e6;  % sampling freq
 fc = 915e6 ;  % carrier center frequency
 noise_sigma=1;
 message = "Hello world!" ;
