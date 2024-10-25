@@ -17,6 +17,12 @@
 #include <cmath>
 #include <fstream>
 
+// Define a structure to hold I/Q samples
+typedef struct {
+    float I; // In-phase component
+    float Q; // Quadrature component
+} Sample;
+
 #define SAMPLES 2048  // Number of samples to capture in each chunk
 #define THRESHOLD 1000 // Magnitude threshold for peak detection
 double NOISE_THRESHOLD = 45.0; // Threshold for detecting meaningful signals (adjust according to your environment)
@@ -99,7 +105,7 @@ void callback(unsigned char *buf, uint32_t len, void *ctx) {
     }
 }
 
-uint8_t *receive_rtl_sdr(rtlsdr_dev_t *dev) {
+Sample* receive_rtl_sdr(rtlsdr_dev_t *dev) {
     // Reset buffer before starting
     if (rtlsdr_reset_buffer(dev) != 0) {
         fprintf(stderr, "Error resetting buffer\n");
@@ -108,7 +114,7 @@ uint8_t *receive_rtl_sdr(rtlsdr_dev_t *dev) {
     }
 
     // Read samples (blocking mode, synchronous)
-    uint8_t *buffer = (uint8_t *)malloc(SAMPLES * 2 * sizeof(uint8_t));
+    Sample* buffer = (Sample *)malloc(SAMPLES * 2 * sizeof(uint8_t));
     if (buffer == NULL) {
         fprintf(stderr, "Memory allocation error\n");
         rtlsdr_close(dev);
@@ -123,12 +129,6 @@ uint8_t *receive_rtl_sdr(rtlsdr_dev_t *dev) {
     }
     return buffer;
 }
-
-// Define a structure to hold I/Q samples
-typedef struct {
-    float I; // In-phase component
-    float Q; // Quadrature component
-} Sample;
 
 // Function to read a binary file containing I/Q samples
 Sample* readBinaryFile(const char* filename, size_t* sampleCount) {

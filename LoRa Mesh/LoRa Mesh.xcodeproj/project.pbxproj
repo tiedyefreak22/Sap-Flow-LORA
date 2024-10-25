@@ -28,14 +28,12 @@
 		BA3608E62CAB59F400F110CD /* LoRa Mesh */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "LoRa Mesh"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA3608E92CAB59F400F110CD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		BA3608F02CAB5A3E00F110CD /* AlignTrack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlignTrack.h; sourceTree = "<group>"; };
-		BA3608F12CAB5B3100F110CD /* LoRa_Demodulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoRa_Demodulation.h; sourceTree = "<group>"; };
 		BA3608F22CAB5BD200F110CD /* RTLSDR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTLSDR.h; sourceTree = "<group>"; };
 		BA3608F42CAB5F1C00F110CD /* librtlsdr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librtlsdr.a; path = ../../../../../../usr/local/Cellar/librtlsdr/2.0.2/lib/librtlsdr.a; sourceTree = "<group>"; };
 		BA3608F62CAB5F8000F110CD /* libfftw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3.a; sourceTree = "<group>"; };
 		BA3608F82CAB609C00F110CD /* LoRa Mesh.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LoRa Mesh.entitlements"; sourceTree = "<group>"; };
+		BA6B4BA72CCB24A000EA358A /* output.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = output.bin; path = ../../output.bin; sourceTree = "<group>"; };
 		BA8198A62CC961DD00FCC5D4 /* LoRaPHY.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoRaPHY.h; sourceTree = "<group>"; };
-		BA8198A72CC9890800FCC5D4 /* nibble.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nibble.h; sourceTree = "<group>"; };
-		BAA1D3842CAB628E00733B36 /* output.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = output.bin; path = ../../output.bin; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,11 +72,9 @@
 				BA3608F82CAB609C00F110CD /* LoRa Mesh.entitlements */,
 				BA3608E92CAB59F400F110CD /* main.cpp */,
 				BA3608F02CAB5A3E00F110CD /* AlignTrack.h */,
-				BA3608F12CAB5B3100F110CD /* LoRa_Demodulation.h */,
 				BA3608F22CAB5BD200F110CD /* RTLSDR.h */,
-				BAA1D3842CAB628E00733B36 /* output.bin */,
+				BA6B4BA72CCB24A000EA358A /* output.bin */,
 				BA8198A62CC961DD00FCC5D4 /* LoRaPHY.h */,
-				BA8198A72CC9890800FCC5D4 /* nibble.h */,
 			);
 			path = "LoRa Mesh";
 			sourceTree = "<group>";
