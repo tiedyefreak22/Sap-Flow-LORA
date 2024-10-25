@@ -6,6 +6,8 @@
 #include <cmath>
 #include <complex>
 #include <bitset>
+#include <algorithm>
+#include <fftw3.h>
 
 class LoRaPHY {
 public:
@@ -14,6 +16,19 @@ public:
         : rf_freq(rf), sf(spreading_factor), bw(bandwidth), fs(sampling_freq),
           cr(1), payload_len(0), has_header(true), crc(true), ldr(false), preamble_len(8) {
         initWhiteningSequence();
+        
+        // Calculate sample_num based on BW, Fs, and SF
+        sample_num = static_cast<int>((fs / bw) * pow(2, sf));
+
+        // Calculate fft_len based on sample_num (use next power of two if needed)
+        fft_len = nextPowerOfTwo(sample_num);
+
+        // Initialize chirps
+        downchirp.resize(sample_num);
+        upchirp.resize(sample_num);
+
+        // Fill downchirp and upchirp with the appropriate values
+        initializeChirps();
     }
 
     // Method to encode a message
@@ -29,197 +44,38 @@ public:
 
     // Method to modulate encoded symbols
     std::vector<Sample> modulate(const std::vector<int>& symbols) {
-        std::vector<Sample> modulated_signal;
-        int samples_per_symbol = std::pow(2, sf);
+        // Calculate the total number of samples needed
+        size_t total_samples = symbols.size() * sample_num;
 
-        for (int symbol : symbols) {
-            // Generate chirp for this symbol
-            auto chirp = generateChirp(samples_per_symbol, 1);
-            modulated_signal.insert(modulated_signal.end(), chirp.begin(), chirp.end());
+        // Resize the samples vector to the correct length
+        std::vector<Sample> samples(total_samples);
+
+        // Fill the samples vector with modulated data for each symbol
+        for (size_t i = 0; i < symbols.size(); ++i) {
+            int symbol = symbols[i];
+
+            // Generate the chirp for the symbol and place it in the samples vector
+            std::vector<Sample> chirp = generateChirp(symbol, true); // Assuming true means upchirp
+
+            // Copy the chirp into the samples vector at the correct position
+            std::copy(chirp.begin(), chirp.end(), samples.begin() + i * sample_num);
         }
 
-        return modulated_signal;
+        return samples;
     }
 
-    // Function to generate an upchirp and downchirp for alignment and demodulation
-    std::vector<Sample> generateUpChirp(int samples_per_symbol) {
-        std::vector<Sample> upchirp = generateChirp(samples_per_symbol, 1);
-        return upchirp;
-    };
-    std::vector<Sample> generateDownChirp(int samples_per_symbol) {
-        std::vector<Sample> downchirp = generateChirp(samples_per_symbol, 0);
-        return downchirp;
-    };
-
-    // Function to align the signal based on the preamble
-    int alignSignal(const std::vector<Sample>& received_signal, int samples_per_symbol) {
-        int signal_length = received_signal.size();
-        int best_index = -1;
-        double max_correlation = 0.0;
-
-        auto upchirp = generateUpChirp(samples_per_symbol);
-
-        // Search for the highest correlation with the upchirp to find the preamble
-        for (int i = 0; i <= signal_length - samples_per_symbol; ++i) {
-            std::complex<double> correlation_sum(0.0, 0.0);
-
-            for (int j = 0; j < samples_per_symbol; ++j) {
-                std::complex<double> received(received_signal[i + j].I, received_signal[i + j].Q);
-                std::complex<double> up(upchirp[j].I, upchirp[j].Q);
-
-                correlation_sum += received * std::conj(up);
-            }
-
-            double magnitude = std::abs(correlation_sum);
-            if (magnitude > max_correlation) {
-                max_correlation = magnitude;
-                best_index = i;
-            }
-        }
-
-        if (best_index == -1) {
-            std::cerr << "Error: Preamble not found in the signal." << std::endl;
-            return -1;
-        }
-
-        std::cout << "Preamble found at index: " << best_index << std::endl;
-        return best_index;
-    }
-
-    // Function to demodulate the signal using downchirps and compensate for CFO
-    std::vector<int> demodulate(const std::vector<Sample>& received_signal, int samples_per_symbol, int num_symbols, double fs, double bw, double cfo) {
-        std::vector<int> symbols;
-        int preamble_symbols = 8; // Number of preamble symbols
-
-        // Align the signal to the start of the preamble
-        int start_index = alignSignal(received_signal, samples_per_symbol);
-        if (start_index == -1) {
-            std::cerr << "Error: Could not align the signal for demodulation." << std::endl;
-            return symbols; // Return empty if alignment fails
-        }
-
-        // Iterate over the number of expected symbols after alignment
-        for (int sym_idx = 0; sym_idx < preamble_symbols + num_symbols; ++sym_idx) {
-            int symbol_start = start_index + sym_idx * samples_per_symbol;
-
-            // Ensure we don't go out of bounds when extracting the symbol segment
-            if (symbol_start + samples_per_symbol > received_signal.size()) {
-                std::cerr << "Error: Not enough samples in the signal to demodulate all symbols." << std::endl;
-                break;
-            }
-
-            // Extract the segment of the received signal corresponding to one symbol
-            std::vector<Sample> symbol_segment(
-                received_signal.begin() + symbol_start,
-                received_signal.begin() + symbol_start + samples_per_symbol
-            );
-
-            auto downchirp = generateDownChirp(samples_per_symbol);
-
-            std::complex<double> accumulated_phase(0.0, 0.0);
-            for (int i = 0; i < samples_per_symbol; ++i) {
-                std::complex<double> received(symbol_segment[i].I, symbol_segment[i].Q);
-                std::complex<double> down(downchirp[i].I, downchirp[i].Q);
-
-                // Apply CFO correction: phase shift based on the estimated CFO
-                double phase_shift = -2 * M_PI * cfo * i / fs; // Negative sign to compensate for CFO
-                std::complex<double> correction(std::cos(phase_shift), std::sin(phase_shift));
-                received *= correction;
-
-                accumulated_phase += received * std::conj(down);
-            }
-
-            int symbol_value = std::round(std::arg(accumulated_phase) * std::pow(2, sf) / (2 * M_PI));
-            symbol_value = (symbol_value + static_cast<int>(std::pow(2, sf))) % static_cast<int>(std::pow(2, sf));
-
-            symbols.push_back(symbol_value);
-        }
-
-        return symbols;
-    }
-
-
-    // Estimate CFO using the preamble
-    double estimateCFO(const std::vector<Sample>& received_signal, int samples_per_symbol, int preamble_symbols, double fs, double bw) {
-        std::complex<double> accumulated_phase(0.0, 0.0);
-
-        // Generate the downchirp used for correlation
-        std::vector<Sample> downchirp = generateDownChirp(samples_per_symbol);
-
-        // Iterate over each preamble symbol and calculate the correlation
-        for (int sym_idx = 0; sym_idx < preamble_symbols; ++sym_idx) {
-            std::complex<double> phase_sum(0.0, 0.0);
-
-            for (int i = 0; i < samples_per_symbol; ++i) {
-                std::complex<double> received(received_signal[sym_idx * samples_per_symbol + i].I,
-                                              received_signal[sym_idx * samples_per_symbol + i].Q);
-                std::complex<double> down(downchirp[i].I, downchirp[i].Q);
-
-                // Correlate the received signal with the downchirp
-                phase_sum += received * std::conj(down);
-            }
-
-            // Debug: Output the phase angle for each preamble symbol
-            double phase_angle = std::arg(phase_sum);
-            std::cout << "Symbol " << sym_idx << " phase angle: " << phase_angle << std::endl;
-
-            // Accumulate the overall phase
-            accumulated_phase += phase_sum;
-        }
-
-        // Calculate the average phase shift per sample
-        double avg_phase_angle = std::arg(accumulated_phase) / preamble_symbols;
-        double cfo_estimate = avg_phase_angle / (2 * M_PI * samples_per_symbol / fs);
-
-        // Threshold to check if CFO is effectively zero
-        double cfo_threshold = 1e-6; // Adjust the threshold based on precision
-        if (std::abs(cfo_estimate) < cfo_threshold) {
-            cfo_estimate = 0.0; // Set CFO to zero if below the threshold
-        }
-
-        std::cout << "[CFO Estimate] Estimated CFO: " << cfo_estimate << " Hz" << std::endl;
-        return cfo_estimate;
-    }
-
-    // Hamming (7, 4) decoding based on CR = 1
-    uint8_t applyHamming74Decode(int encoded_value) {
-        std::bitset<7> encoded_bits(encoded_value);
-
-        int parity_bit1 = encoded_bits[4];
-        int parity_bit2 = encoded_bits[5];
-        int parity_bit3 = encoded_bits[6];
-
-        int syndrome1 = encoded_bits[0] ^ encoded_bits[1] ^ encoded_bits[3] ^ parity_bit1;
-        int syndrome2 = encoded_bits[0] ^ encoded_bits[2] ^ encoded_bits[3] ^ parity_bit2;
-        int syndrome3 = encoded_bits[1] ^ encoded_bits[2] ^ encoded_bits[3] ^ parity_bit3;
-
-        int syndrome = (syndrome1 << 2) | (syndrome2 << 1) | syndrome3;
-
-        if (syndrome != 0 && syndrome <= 7) {
-            encoded_bits.flip(syndrome - 1);
-        }
-
-        uint8_t corrected_data = (encoded_bits[0] << 0) | (encoded_bits[1] << 1) |
-                                 (encoded_bits[2] << 2) | (encoded_bits[3] << 3);
-
-        return corrected_data;
-    }
-
-    // Function to decode symbols using Gray decoding and FEC
-    std::vector<uint8_t> decode(const std::vector<int>& symbols) {
-        std::vector<uint8_t> decoded_data;
-
-        for (const int& symbol : symbols) {
-            int gray_decoded_symbol = grayDecode(symbol);
-            uint8_t decoded_byte = applyHamming74Decode(gray_decoded_symbol);
-            decoded_data.push_back(decoded_byte);
-        }
-
-        return decoded_data;
-    }
+//    // Function to generate an upchirp and downchirp for alignment and demodulation
+//    std::vector<Sample> generateUpChirp(int samples_per_symbol) {
+//        std::vector<Sample> upchirp = generateChirp(samples_per_symbol, 1);
+//        return upchirp;
+//    };
+//    std::vector<Sample> generateDownChirp(int samples_per_symbol) {
+//        std::vector<Sample> downchirp = generateChirp(samples_per_symbol, 0);
+//        return downchirp;
+//    };
 
     // Function to convert the decoded symbols back into a character array
-    char* convertToCharArray(const std::vector<uint8_t>& decoded_data) {
+    char* convertToCharArray(const std::vector<int>& decoded_data) {
         char* message = new char[decoded_data.size() + 1];
         for (size_t i = 0; i < decoded_data.size(); ++i) {
             message[i] = static_cast<char>(decoded_data[i]);
@@ -227,7 +83,162 @@ public:
         message[decoded_data.size()] = '\0';
         return message;
     }
+        
+    std::vector<int> grayCoding(const std::vector<int>& din) {
+        std::vector<int> symbols(din.size());
+        for (size_t i = 0; i < 8 && i < din.size(); ++i) {
+            symbols[i] = std::floor(din[i] / 4);
+        }
+        return symbols;
+    }
 
+    std::vector<int> diagDeinterleave(const std::vector<int>& symbols, int ppm) {
+        std::vector<int> codewords;
+        for (int symbol : symbols) {
+            std::vector<int> binary = intToBinary(symbol, ppm);
+            codewords.insert(codewords.end(), binary.begin(), binary.end());
+        }
+        return codewords;
+    }
+
+    std::vector<int> hammingDecode(std::vector<int>& codewords, int rdd) {
+        std::vector<int> nibbles;
+        int p1 = bitReduce(codewords, {8, 4, 3, 1});
+        int p2 = bitReduce(codewords, {7, 6, 3, 2});
+        int p4 = bitReduce(codewords, {5, 6, 3, 2});
+        int p8 = bitReduce(codewords, {5, 4, 3, 2});
+
+        int error_pos = p1 + 2 * p2 + 4 * p4 + 8 * p8;
+        if (error_pos > 0 && error_pos <= codewords.size()) {
+            codewords[error_pos - 1] ^= 1;
+        }
+
+        int nibble = ((codewords[2] >> 1) & 1) +
+                     ((codewords[3] >> 3) & 1) +
+                     ((codewords[4] >> 5) & 1) +
+                     ((codewords[5] >> 7) & 1);
+        nibbles.push_back(nibble);
+
+        return nibbles;
+    }
+
+    std::vector<int> dewhiten(const std::vector<int>& bytes) {
+        std::vector<int> bytes_w(bytes.size());
+        for (size_t i = 0; i < bytes.size(); ++i) {
+            bytes_w[i] = bytes[i] ^ whitening_seq[i];
+        }
+        return bytes_w;
+    }
+
+    int dechirp(int x, bool is_up, std::vector<Sample>& signal) {
+        std::vector<Sample> chirp = is_up ? upchirp : downchirp;
+
+        if (signal.size() < x + sample_num || chirp.size() < sample_num) {
+            std::cerr << "Insufficient data in signal or chirp vectors!" << std::endl;
+            return -1;
+        }
+
+        std::vector<Sample> sym(signal.begin() + x, signal.begin() + x + sample_num);
+        std::vector<Sample> dechirped(sample_num);
+
+        for (int i = 0; i < sample_num; ++i) {
+            dechirped[i].I = sym[i].I * chirp[i].I + sym[i].Q * chirp[i].Q;
+            dechirped[i].Q = sym[i].Q * chirp[i].I - sym[i].I * chirp[i].Q;
+        }
+
+        fftw_complex* in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * fft_len);
+        fftw_complex* out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * fft_len);
+        if (in == nullptr || out == nullptr) {
+            std::cerr << "Memory allocation for FFTW arrays failed!" << std::endl;
+            if (in) fftw_free(in);
+            if (out) fftw_free(out);
+            return -1;
+        }
+
+        fftw_plan plan = fftw_plan_dft_1d(fft_len, in, out, FFTW_FORWARD, FFTW_MEASURE);
+        if (plan == nullptr) {
+            std::cerr << "FFTW plan creation failed!" << std::endl;
+            fftw_free(in);
+            fftw_free(out);
+            return -1;
+        }
+
+        for (int i = 0; i < sample_num; ++i) {
+            in[i][0] = dechirped[i].I;
+            in[i][1] = dechirped[i].Q;
+        }
+        for (int i = sample_num; i < fft_len; ++i) {
+            in[i][0] = 0.0;
+            in[i][1] = 0.0;
+        }
+
+        fftw_execute(plan);
+
+        std::vector<double> fft_result(fft_len);
+        for (int i = 0; i < fft_len; ++i) {
+            fft_result[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+        }
+
+        auto max_it = std::max_element(fft_result.begin(), fft_result.end());
+        int pk = std::distance(fft_result.begin(), max_it);
+
+        fftw_destroy_plan(plan);
+        fftw_free(in);
+        fftw_free(out);
+
+        // Normalize the peak index to the LoRa symbol range
+        pk = (pk * (1 << sf)) / fft_len;
+
+        return pk;
+    }
+
+    std::pair<std::vector<int>, bool> decode(const std::vector<int>& symbols) {
+        std::vector<int> data;
+        bool checksum_valid = false;
+
+        // Step 1: Gray coding
+        std::vector<int> gray_coded_symbols = grayCoding(symbols);
+
+        // Step 2: Diagonal deinterleaving
+        std::vector<int> codewords = diagDeinterleave(gray_coded_symbols, 8);
+
+        // Step 3: Hamming decoding
+        std::vector<int> nibbles = hammingDecode(codewords, cr);
+
+        // Step 4: Dewhitening the decoded data
+        data = dewhiten(nibbles);
+
+        // Step 5: Validate checksum
+        checksum_valid = validateChecksum(data);
+
+        return std::make_pair(data, checksum_valid);
+    }
+
+    std::vector<int> demodulate(std::vector<Sample>& signal) {
+        std::vector<int> symbols;
+        // Ensure the size is at least 4096 elements
+        if (signal.size() < 4096) {
+            // Resize the vector and fill new elements with zeros
+            signal.resize(4096, Sample{0.0f, 0.0f});
+        }
+        // Ensure we have enough signal data for demodulation
+        if (signal.size() < sample_num) {
+            std::cerr << "Insufficient signal size for demodulation!" << std::endl;
+            return symbols;
+        }
+
+        for (int i = 0; i + sample_num <= signal.size(); i += sample_num) {
+            int pk = dechirp(i, false, signal);
+            if (pk >= 0 && pk < (1 << sf)) { // Ensure pk is within the valid range
+                std::cout << "Symbol at index " << i << ": " << pk << std::endl; // Debug output
+                symbols.push_back(pk);
+            } else {
+                std::cerr << "Error: Invalid symbol value " << pk << " at index " << i << std::endl;
+            }
+        }
+
+        return symbols;
+    }
 
 private:
     double rf_freq;           // Carrier frequency
@@ -241,6 +252,10 @@ private:
     bool ldr;                 // Low Data Rate Optimization
     int preamble_len;         // Preamble length
     std::vector<uint8_t> whitening_seq;
+    int fft_len;
+    int sample_num;
+    std::vector<Sample> downchirp;
+    std::vector<Sample> upchirp;
 
     // Method to initialize the whitening sequence
     void initWhiteningSequence() {
@@ -303,6 +318,25 @@ private:
         }
         return binary;
     }
+    
+    void initializeChirps() {
+        double symbol_duration = static_cast<double>(sample_num) / fs; // Duration of one symbol
+        double chirp_rate = bw / symbol_duration; // Chirp rate (BW/T)
+
+        // Generate the upchirp
+        for (int i = 0; i < sample_num; ++i) {
+            double t = static_cast<double>(i) / fs; // Time for the current sample
+            double phase = 2 * M_PI * (0.5 * chirp_rate * t * t);
+            upchirp[i] = {static_cast<float>(std::cos(phase)), static_cast<float>(std::sin(phase))};
+        }
+
+        // Generate the downchirp
+        for (int i = 0; i < sample_num; ++i) {
+            double t = static_cast<double>(i) / fs; // Time for the current sample
+            double phase = 2 * M_PI * (0.5 * chirp_rate * t * t);
+            downchirp[i] = {static_cast<float>(std::cos(-phase)), static_cast<float>(std::sin(-phase))};
+        }
+    }
 
     // Method to generate a chirp for a given symbol
     std::vector<Sample> generateChirp(int samples_per_symbol, bool is_up) {
@@ -329,6 +363,59 @@ private:
         }
 
         return chirp;
+    }
+    
+    int bitReduce(const std::vector<int>& codewords, const std::vector<int>& indices) {
+        int result = 0;
+        for (int index : indices) {
+            result ^= codewords[index - 1]; // MATLAB uses 1-based indexing; adjust for 0-based in C++
+        }
+        return result;
+    }
+
+    float magnitude(const Sample& sample) {
+        return std::sqrt(sample.I * sample.I + sample.Q * sample.Q);
+    }
+
+    std::vector<int> intToBinary(int num, int length) {
+        std::vector<int> binary(length, 0);
+        for (int i = 0; i < length; ++i) {
+            binary[length - 1 - i] = (num >> i) & 1;
+        }
+        return binary;
+    }
+
+    uint16_t calculateCRC(const std::vector<int>& data) {
+        uint16_t crc = 0xFFFF;
+        const uint16_t polynomial = 0x1021; // x^16 + x^12 + x^5 + 1
+
+        for (auto byte : data) {
+            crc ^= (byte << 8);
+            for (int i = 0; i < 8; ++i) {
+                if (crc & 0x8000) {
+                    crc = (crc << 1) ^ polynomial;
+                } else {
+                    crc <<= 1;
+                }
+            }
+        }
+        return crc;
+    }
+
+    bool validateChecksum(const std::vector<int>& data) {
+        // Extract the payload and the CRC from the data
+        std::vector<int> payload(data.begin(), data.end() - 2);
+        uint16_t received_crc = (data[data.size() - 2] << 8) | data[data.size() - 1];
+
+        // Calculate the CRC for the payload
+        uint16_t calculated_crc = calculateCRC(payload);
+
+        // Return true if the CRCs match, false otherwise
+        return received_crc == calculated_crc;
+    }
+    
+    int nextPowerOfTwo(int n) {
+        return pow(2, ceil(log2(n)));
     }
 
 };

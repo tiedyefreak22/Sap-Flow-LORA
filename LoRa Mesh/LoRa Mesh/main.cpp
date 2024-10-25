@@ -33,6 +33,14 @@ int shift = 0;
 // LoRa Setup
 LoRaPHY phy(fc, SF, BW, Fs);
 
+void printSignalSegment(const std::vector<Sample>& signal, int start, int length) {
+    std::cout << "Signal segment starting at " << start << ": ";
+    for (int i = start; i < start + length && i < signal.size(); ++i) {
+        std::cout << "(" << signal[i].I << ", " << signal[i].Q << ") ";
+    }
+    std::cout << "..." << std::endl;
+}
+
 int main(int argc, const char * argv[]) {
     try {
         std::vector<Sample> samples;
@@ -60,7 +68,7 @@ int main(int argc, const char * argv[]) {
             samples = phy.modulate(symbols);
                         
             // Print the first few samples
-            for (int i = 0; i < 10; ++i) {
+            for (size_t i = 0; i < samples.size(); ++i) {
                 printf("Sample %d: I = %f, Q = %f\n", i, samples[i].I, samples[i].Q);
             }
             
@@ -76,21 +84,18 @@ int main(int argc, const char * argv[]) {
 //        new_received_fft=received_fft;
 //        
 //        new_received_signal = ifft(new_received_fft(:,1));
-//        
+//
+        // Example usage
+        printSignalSegment(samples, 0, 10); // Print the first 10 samples
+        printSignalSegment(samples, 2048, 10); // Print samples around index 2048
         // Demodulation
-        int num_symbols = 13; // Adjust based on the message length and encoding
+        std::vector<int> demodulated_symbols = phy.demodulate(samples);
 
-        // Estimate CFO
-        double cfo = phy.estimateCFO(samples, M, 8, Fs, BW);
-
-        // Demodulate the signal
-        std::vector<int> demodulated_symbols = phy.demodulate(samples, M, num_symbols, Fs, BW, cfo);
-
-        for (int i = 0; i < sizeof(demodulated_symbols); i++) {
+        for (size_t i = 0; i < demodulated_symbols.size(); ++i) {
             printf("%d\n", demodulated_symbols[i]);
         }
         // Decode the demodulated symbols
-        std::vector<uint8_t> decoded_data = phy.decode(demodulated_symbols);
+        auto [decoded_data, checksum_valid] = phy.decode(demodulated_symbols);
 
         // Convert decoded data to a character array
         char* decoded_message = phy.convertToCharArray(decoded_data);

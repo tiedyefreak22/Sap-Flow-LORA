@@ -55,7 +55,7 @@ while true
         
         % Baseband Modulation
         signalIQ1 = phy.modulate(symbols);
-        display(signalIQ1(1:9))
+        display(signalIQ1(1:10))
         figure(1)
         spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
         noise=noise_sigma*randn(length(signalIQ1),1);
