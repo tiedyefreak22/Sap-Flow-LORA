@@ -12,10 +12,11 @@
 #include <cstdlib>
 #include <vector>
 #include <complex>
+#include <ctime>
 
-int load_data = 1;
+int load_data = 0;
 int SDR = 0;
-int sim_data = 0;
+int sim_data = 1;
 
 // LoRa Parameters
 int SF = 8; // Spreading factor
@@ -23,7 +24,7 @@ int M=2^SF; // no. of samples in one symbol
 int BW = 125e3 ; // Bandwidth
 int Fs = 1e6;  // sampling freq
 int fc = 915e6 ;  // carrier center frequency
-int noise_sigma=1;
+float noise_sigma = 0.0;
 const char* message = "Hello world!";
 int numPreambleSymbols = 8; // Standard LoRa preamble symbol count
 double symbolRate = BW / (2^SF); // Symbol rate
@@ -34,7 +35,7 @@ LoRaPHY phy(fc, SF, BW, Fs);
 
 int main(int argc, const char * argv[]) {
     try {
-        Sample* samples;
+        Sample* samples = nullptr;
         if (load_data) {
             // Load data from a .bin file
             const char* filename = "/Users/kevinhardin/Documents/GitHub/Becca-Sap-Flow-LORA/output.bin";
@@ -68,22 +69,27 @@ int main(int argc, const char * argv[]) {
             std::vector<int> symbols = phy.encode(intVector);
 
             // Baseband Modulation
-            std::vector<std::complex<float>> signalIQ1 = phy.modulate(symbols);
-            uint8_t noise = noise_sigma * (1 + (rand() % sizeof(signalIQ1)));
-            // Create a vector with a single complex number
-            std::vector<std::complex<float>> complexVector;
-            complexVector.push_back(std::complex<float>(static_cast<float>(noise), 0.0f));
-    
-            std::vector<std::complex<float>> samples(signalIQ1.size());
-
-            for (size_t i = 0; i < signalIQ1.size(); ++i) {
-                samples[i] = signalIQ1[i] + complexVector[i];
+            Sample* signalIQ1 = phy.modulate(symbols);
+            std::srand(std::time(nullptr)); // use current time as seed for random generator
+            int random_value = (1 + (std::rand() % 10000));
+//            // Create a vector with a single complex number
+//            std::vector<std::complex<float>> complexVector;
+//            complexVector.push_back(std::complex<float>(static_cast<float>(noise), 0.0f));
+//    
+//            std::vector<std::complex<float>> samples(signalIQ1.size());
+            Sample temp[sizeof(signalIQ1)];
+            for (int i = 0; i < sizeof(signalIQ1); i++) {
+                Sample noise = {static_cast<float>(noise_sigma * ((static_cast<float>(random_value) / 10000.0) * 3 - 3)), 0};
+                temp[i] = add(signalIQ1[i], noise);
             }
             
+            samples = temp;
+            
             // Print the first few samples
-            for (size_t i = 0; i < 10; ++i) {
-                printf("Sample %zu: I = %f, Q = %f\n", i, samples[i].real(), samples[i].imag());
+            for (int i = 0; i < 10; ++i) {
+                printf("Sample %d: I = %f, Q = %f\n", i, samples[i].I, samples[i].Q);
             }
+            
         } else if (SDR) {
             // Capture data from RTL-SDR
             init_rtl_sdr();
@@ -98,16 +104,21 @@ int main(int argc, const char * argv[]) {
 //        new_received_signal = ifft(new_received_fft(:,1));
 //        
         // Demodulation
-//        std::vector<int> symbols_d = phy.demodulate(samples);
-//        printf("[demodulate] symbols:%s\n", symbols_d);
-//        
-//        // Decoding
-//        std::pair<std::vector<int> data, int checksum> = phy.decode(symbols_d);
-//        printf("[decode] data:\n%s", data);
-//        printf("[decode] checksum:\n%s", checksum);
-//        
-//        string str = char(data(1:end-2));
-//        printf(str);
+        std::vector<std::complex<float>> new_samples;
+        for (int i = 0; i < sizeof(samples); i++){
+            new_samples[i] = {samples[i].I, samples[i].Q};
+        }
+        std::vector<int> symbols_d = phy.demodulate(new_samples);
+        for (int i = 0; i < sizeof(symbols_d); i++) {
+            printf("%c", symbols_d[i]);
+        }
+        // Decoding
+        auto [data, checksum] = phy.decode(symbols_d);
+        char* str = nullptr;
+        for (int i = 0; i < sizeof(data) - 2; i++) {
+            str[i] = data[i];
+            printf("%c", str[i]);
+        }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // std::vector<Signal> overlappingSignals;

@@ -23,6 +23,8 @@ typedef struct {
     float Q; // Quadrature component
 } Sample;
 
+Sample    add    (Sample l, Sample r)    {return ({Sample z = {l.I + r.I, l.Q + r.Q}; z;});}
+
 #define SAMPLES 2048  // Number of samples to capture in each chunk
 #define THRESHOLD 1000 // Magnitude threshold for peak detection
 double NOISE_THRESHOLD = 45.0; // Threshold for detecting meaningful signals (adjust according to your environment)
@@ -34,7 +36,7 @@ double NOISE_THRESHOLD = 45.0; // Threshold for detecting meaningful signals (ad
 //#define DEFAULT_SAMPLE_RATE 2048000  // 2.048 MSPS
 //#define DEFAULT_FREQUENCY  94100000 // 94.1 MHz (Local Radio)
 
-rtlsdr_dev_t *dev = NULL;
+rtlsdr_dev_t *dev;
 
 // Function to save the RTL-SDR data to a file
 void save_data_to_file(const char* filename, double* freq, double* magnitude, int N) {

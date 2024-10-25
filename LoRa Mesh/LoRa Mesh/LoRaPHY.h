@@ -116,12 +116,29 @@ public:
     }
 
     // Method to demodulate the signal
-    std::vector<int> demodulate(const std::vector<std::complex<float>>& received_signal) {
+   std::vector<int> demodulate(const std::vector<std::complex<float>>& received_signal) {
         std::vector<int> symbols;
         int index = 0;
+
+        // Iterate over the received signal
         while (index < received_signal.size() - sf) {
-            auto downchirp = dechirp(index, false);
-            int symbol = std::round(downchirp.imag());
+            // Calculate the down chirp for the current segment
+            std::complex<float> downchirp_result(0.0, 0.0);
+            for (int i = 0; i < sf; ++i) {
+                // Generate the down chirp signal
+                float phase = -2 * M_PI * i * i / sf; // Down chirp (negative frequency ramp)
+                std::complex<float> downchirp(std::cos(phase), std::sin(phase));
+
+                // Multiply the received signal by the conjugate of the down chirp
+                downchirp_result += received_signal[index + i] * std::conj(downchirp);
+            }
+
+            // Calculate the symbol value by converting the dechirped signal
+            int symbol = std::round(std::arg(downchirp_result) * sf / (2 * M_PI));
+
+            // Normalize symbol value within expected range
+            symbol = (symbol + sf) % sf;
+
             symbols.push_back(symbol);
             index += sf;
         }
@@ -141,7 +158,7 @@ public:
     }
 
     // Method to modulate encoded data
-    std::vector<std::complex<float>> modulate(const std::vector<int>& symbols) {
+    Sample* modulate(const std::vector<int>& symbols) {
         std::vector<std::complex<float>> modulated_signal;
 
         for (int symbol : symbols) {
@@ -151,13 +168,13 @@ public:
                 modulated_signal.push_back(chirp);
             }
         }
-//        Sample* new_modulated_signal[sizeof(modulated_signal)];
-//        for (int i = 0; i < sizeof(modulated_signal); i++) {
-//            Sample temp = {modulated_signal[i].real(), modulated_signal[i].imag()};
-//            new_modulated_signal[i] = &temp;
-//        }
+        Sample* new_modulated_signal;
+        for (int i = 0; i < sizeof(modulated_signal); i++) {
+            new_modulated_signal[i].I = modulated_signal[i].real();
+            new_modulated_signal[i].Q = modulated_signal[i].imag();
+        }
 
-        return modulated_signal;
+        return new_modulated_signal;
     }
 
     // File read and write methods remain the same...
@@ -169,10 +186,67 @@ private:
         return decoded_value;
     }
 
-    // Helper method to encode a byte of data
+    // Example Hamming (7,4) encoder
+    int hamming74Encode(int nibble) {
+        // Hamming (7,4) code takes 4 bits and adds 3 parity bits
+        int p1 = (nibble >> 0 & 1) ^ (nibble >> 1 & 1) ^ (nibble >> 3 & 1);
+        int p2 = (nibble >> 0 & 1) ^ (nibble >> 2 & 1) ^ (nibble >> 3 & 1);
+        int p3 = (nibble >> 1 & 1) ^ (nibble >> 2 & 1) ^ (nibble >> 3 & 1);
+
+        int encoded = (nibble & 0x0F) | (p1 << 4) | (p2 << 5) | (p3 << 6);
+        return encoded;
+    }
+
+    // Adjusted encodeByte method for LoRa encoding
     int encodeByte(int byte) {
-        // Example encoding logic (implement according to LoRa encoding specs)
-        return byte ^ 0xFF;  // Invert bits as a placeholder
+        // Step 1: Apply forward error correction (FEC)
+        int fec_encoded = applyFEC(byte);
+
+        // Step 2: Interleave bits based on spreading factor and coding rate
+        int interleaved = interleaveBits(fec_encoded);
+
+        // Step 3: Apply whitening using the whitening sequence
+        int whitened = interleaved ^ whitening_seq[interleaved % whitening_seq.size()];
+
+        // Return the fully encoded byte
+        return whitened;
+    }
+
+    // Method to apply forward error correction (FEC) based on LoRa coding rate
+    int applyFEC(int byte) {
+        std::bitset<8> data_bits(byte); // Represent byte as 8 bits
+        std::bitset<13> encoded_bits;
+
+        // LoRa uses CR from 4/5 to 4/8. We'll apply additional parity bits based on CR.
+        for (int i = 0; i < 4; ++i) {
+            encoded_bits[i] = data_bits[i];
+        }
+
+        // Calculate parity bits based on coding rate (CR)
+        for (int i = 4; i < 4 + cr; ++i) {
+            // Simple parity calculation using XOR (expand this for more robust CRC if needed)
+            encoded_bits[i] = encoded_bits[0] ^ encoded_bits[1] ^ encoded_bits[2] ^ encoded_bits[3];
+        }
+
+        // Combine data and parity bits into the final encoded symbol
+        int fec_encoded = static_cast<int>(encoded_bits.to_ulong());
+        return fec_encoded;
+    }
+
+    // Method to interleave bits based on spreading factor and coding rate
+    int interleaveBits(int data) {
+        std::bitset<13> bits(data);
+        std::bitset<13> interleaved;
+
+        // Interleaving as per LoRa standard: interleave according to SF and CR
+        // LoRa defines a specific pattern for how bits should be interleaved.
+        // Example pattern for illustration:
+        for (int i = 0; i < 13; ++i) {
+            int new_pos = (i * sf + cr) % 13; // Simplified formula for demonstration
+            interleaved[new_pos] = bits[i];
+        }
+
+        return static_cast<int>(interleaved.to_ulong());
     }
 
     // Method for dechirping the signal
