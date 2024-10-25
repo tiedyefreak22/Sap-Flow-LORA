@@ -35,16 +35,16 @@ LoRaPHY phy(fc, SF, BW, Fs);
 
 int main(int argc, const char * argv[]) {
     try {
-        Sample* samples = nullptr;
+        std::vector<Sample> samples;
         if (load_data) {
             // Load data from a .bin file
             const char* filename = "/Users/kevinhardin/Documents/GitHub/Becca-Sap-Flow-LORA/output.bin";
             size_t sampleCount = 0;
 
             samples = readBinaryFile(filename, &sampleCount);
-            if (samples == NULL) {
-                return 1; // Error reading file
-            }
+//            if (samples == NULL) {
+//                return 1; // Error reading file
+//            }
 
             // Print the first few samples
             for (size_t i = 0; i < sampleCount && i < 10; ++i) {
@@ -54,37 +54,11 @@ int main(int argc, const char * argv[]) {
             // Encode payload
             printf("[encode] message: %s\n", message);
             
-            // Convert to std::string
-            std::string str(message);
-
-            // Create a vector to store the integers
-            std::vector<int> intVector;
-
-            // Iterate over each character in the string
-            for (char c : str) {
-                // Convert each character to an integer and add to the vector
-                intVector.push_back(c - '0');
-            }
-            
-            std::vector<int> symbols = phy.encode(intVector);
+            std::vector<int> symbols = phy.encode(message);
 
             // Baseband Modulation
-            Sample* signalIQ1 = phy.modulate(symbols);
-            std::srand(std::time(nullptr)); // use current time as seed for random generator
-            int random_value = (1 + (std::rand() % 10000));
-//            // Create a vector with a single complex number
-//            std::vector<std::complex<float>> complexVector;
-//            complexVector.push_back(std::complex<float>(static_cast<float>(noise), 0.0f));
-//    
-//            std::vector<std::complex<float>> samples(signalIQ1.size());
-            Sample temp[sizeof(signalIQ1)];
-            for (int i = 0; i < sizeof(signalIQ1); i++) {
-                Sample noise = {static_cast<float>(noise_sigma * ((static_cast<float>(random_value) / 10000.0) * 3 - 3)), 0};
-                temp[i] = add(signalIQ1[i], noise);
-            }
-            
-            samples = temp;
-            
+            samples = phy.modulate(symbols);
+                        
             // Print the first few samples
             for (int i = 0; i < 10; ++i) {
                 printf("Sample %d: I = %f, Q = %f\n", i, samples[i].I, samples[i].Q);
@@ -104,21 +78,28 @@ int main(int argc, const char * argv[]) {
 //        new_received_signal = ifft(new_received_fft(:,1));
 //        
         // Demodulation
-        std::vector<std::complex<float>> new_samples;
-        for (int i = 0; i < sizeof(samples); i++){
-            new_samples[i] = {samples[i].I, samples[i].Q};
+        int num_symbols = 13; // Adjust based on the message length and encoding
+
+        // Estimate CFO
+        double cfo = phy.estimateCFO(samples, M, 8, Fs, BW);
+
+        // Demodulate the signal
+        std::vector<int> demodulated_symbols = phy.demodulate(samples, M, num_symbols, Fs, BW, cfo);
+
+        for (int i = 0; i < sizeof(demodulated_symbols); i++) {
+            printf("%d\n", demodulated_symbols[i]);
         }
-        std::vector<int> symbols_d = phy.demodulate(new_samples);
-        for (int i = 0; i < sizeof(symbols_d); i++) {
-            printf("%c", symbols_d[i]);
-        }
-        // Decoding
-        auto [data, checksum] = phy.decode(symbols_d);
-        char* str = nullptr;
-        for (int i = 0; i < sizeof(data) - 2; i++) {
-            str[i] = data[i];
-            printf("%c", str[i]);
-        }
+        // Decode the demodulated symbols
+        std::vector<uint8_t> decoded_data = phy.decode(demodulated_symbols);
+
+        // Convert decoded data to a character array
+        char* decoded_message = phy.convertToCharArray(decoded_data);
+
+        // Print the decoded message
+        std::cout << "Decoded message: " << decoded_message << std::endl;
+
+        // Free dynamically allocated memory
+        delete[] decoded_message;
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // std::vector<Signal> overlappingSignals;

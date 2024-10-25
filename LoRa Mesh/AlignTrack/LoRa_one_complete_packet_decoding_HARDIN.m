@@ -3,7 +3,7 @@ close all;
 clc;
 
 SDR = 0;
-AlignTrack = 1;
+AlignTrack = 0;
 
 % LoRa Parameters
 SF = 8; % Spreading factor
@@ -55,6 +55,7 @@ while true
         
         % Baseband Modulation
         signalIQ1 = phy.modulate(symbols);
+        display(signalIQ1(1:9))
         figure(1)
         spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
         noise=noise_sigma*randn(length(signalIQ1),1);
@@ -161,6 +162,7 @@ while true
     spectrogram(new_received_signal,1000,0,1000,Fs,'yaxis','centered')
     
     % Demodulation
+    length(new_received_signal)
     [symbols_d, cfo] = phy.demodulate(new_received_signal);
     fprintf("[demodulate] symbols:\n");
     disp(symbols_d);
