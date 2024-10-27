@@ -9,7 +9,34 @@
 /* Begin PBXBuildFile section */
 		BA3608EA2CAB59F400F110CD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA3608E92CAB59F400F110CD /* main.cpp */; };
 		BA3608F52CAB5F1C00F110CD /* librtlsdr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA3608F42CAB5F1C00F110CD /* librtlsdr.a */; };
-		BA3608F72CAB5F8000F110CD /* libfftw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA3608F62CAB5F8000F110CD /* libfftw3.a */; };
+		BA487CF62CCEDD22009738E2 /* libfftw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA3608F62CAB5F8000F110CD /* libfftw3.a */; };
+		BA487D002CCEE2A3009738E2 /* libfftw3_omp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CEF2CCEDD10009738E2 /* libfftw3_omp.a */; };
+		BA487D012CCEE2A3009738E2 /* libfftw3_threads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CEB2CCEDD10009738E2 /* libfftw3_threads.a */; };
+		BA487D022CCEE2A3009738E2 /* libfftw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA3608F62CAB5F8000F110CD /* libfftw3.a */; };
+		BA487D042CCEE2A3009738E2 /* libfftw3f_omp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CED2CCEDD10009738E2 /* libfftw3f_omp.a */; };
+		BA487D052CCEE2A3009738E2 /* libfftw3f_threads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CE92CCEDD10009738E2 /* libfftw3f_threads.a */; };
+		BA487D062CCEE2A3009738E2 /* libfftw3f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CEE2CCEDD10009738E2 /* libfftw3f.a */; };
+		BA487D082CCEE2A3009738E2 /* libfftw3l_omp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CF02CCEDD10009738E2 /* libfftw3l_omp.a */; };
+		BA487D092CCEE2A3009738E2 /* libfftw3l_threads.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CEA2CCEDD10009738E2 /* libfftw3l_threads.a */; };
+		BA487D0A2CCEE2A3009738E2 /* libfftw3l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487CF12CCEDD10009738E2 /* libfftw3l.a */; };
+		BA487D192CCEE2A4009738E2 /* libfftw3l.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D0C2CCEE2A3009738E2 /* libfftw3l.3.dylib */; };
+		BA487D1A2CCEE2A4009738E2 /* libfftw3l.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D0C2CCEE2A3009738E2 /* libfftw3l.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D1B2CCEE2A4009738E2 /* libfftw3_omp.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D0D2CCEE2A3009738E2 /* libfftw3_omp.3.dylib */; };
+		BA487D1C2CCEE2A4009738E2 /* libfftw3_omp.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D0D2CCEE2A3009738E2 /* libfftw3_omp.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D1D2CCEE2A4009738E2 /* libfftw3f.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D0E2CCEE2A3009738E2 /* libfftw3f.3.dylib */; };
+		BA487D1E2CCEE2A4009738E2 /* libfftw3f.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D0E2CCEE2A3009738E2 /* libfftw3f.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D212CCEE2A4009738E2 /* libfftw3f_omp.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D102CCEE2A3009738E2 /* libfftw3f_omp.3.dylib */; };
+		BA487D222CCEE2A4009738E2 /* libfftw3f_omp.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D102CCEE2A3009738E2 /* libfftw3f_omp.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D232CCEE2A4009738E2 /* libfftw3l_threads.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D112CCEE2A3009738E2 /* libfftw3l_threads.3.dylib */; };
+		BA487D242CCEE2A4009738E2 /* libfftw3l_threads.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D112CCEE2A3009738E2 /* libfftw3l_threads.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D252CCEE2A4009738E2 /* libfftw3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D122CCEE2A4009738E2 /* libfftw3.3.dylib */; };
+		BA487D262CCEE2A4009738E2 /* libfftw3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D122CCEE2A4009738E2 /* libfftw3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D272CCEE2A4009738E2 /* libfftw3l_omp.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D132CCEE2A4009738E2 /* libfftw3l_omp.3.dylib */; };
+		BA487D282CCEE2A4009738E2 /* libfftw3l_omp.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D132CCEE2A4009738E2 /* libfftw3l_omp.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D2B2CCEE2A4009738E2 /* libfftw3_threads.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D152CCEE2A4009738E2 /* libfftw3_threads.3.dylib */; };
+		BA487D2C2CCEE2A4009738E2 /* libfftw3_threads.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D152CCEE2A4009738E2 /* libfftw3_threads.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BA487D2D2CCEE2A4009738E2 /* libfftw3f_threads.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA487D162CCEE2A4009738E2 /* libfftw3f_threads.3.dylib */; };
+		BA487D2E2CCEE2A4009738E2 /* libfftw3f_threads.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BA487D162CCEE2A4009738E2 /* libfftw3f_threads.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -22,6 +49,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		BA487D2F2CCEE2A4009738E2 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BA487D1C2CCEE2A4009738E2 /* libfftw3_omp.3.dylib in Embed Libraries */,
+				BA487D2E2CCEE2A4009738E2 /* libfftw3f_threads.3.dylib in Embed Libraries */,
+				BA487D282CCEE2A4009738E2 /* libfftw3l_omp.3.dylib in Embed Libraries */,
+				BA487D242CCEE2A4009738E2 /* libfftw3l_threads.3.dylib in Embed Libraries */,
+				BA487D1A2CCEE2A4009738E2 /* libfftw3l.3.dylib in Embed Libraries */,
+				BA487D262CCEE2A4009738E2 /* libfftw3.3.dylib in Embed Libraries */,
+				BA487D1E2CCEE2A4009738E2 /* libfftw3f.3.dylib in Embed Libraries */,
+				BA487D2C2CCEE2A4009738E2 /* libfftw3_threads.3.dylib in Embed Libraries */,
+				BA487D222CCEE2A4009738E2 /* libfftw3f_omp.3.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +78,29 @@
 		BA3608F42CAB5F1C00F110CD /* librtlsdr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librtlsdr.a; path = ../../../../../../usr/local/Cellar/librtlsdr/2.0.2/lib/librtlsdr.a; sourceTree = "<group>"; };
 		BA3608F62CAB5F8000F110CD /* libfftw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3.a; sourceTree = "<group>"; };
 		BA3608F82CAB609C00F110CD /* LoRa Mesh.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LoRa Mesh.entitlements"; sourceTree = "<group>"; };
+		BA487CE82CCEDD10009738E2 /* libfftw3_mpi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3_mpi.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_mpi.a; sourceTree = "<group>"; };
+		BA487CE92CCEDD10009738E2 /* libfftw3f_threads.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f_threads.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_threads.a; sourceTree = "<group>"; };
+		BA487CEA2CCEDD10009738E2 /* libfftw3l_threads.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3l_threads.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_threads.a; sourceTree = "<group>"; };
+		BA487CEB2CCEDD10009738E2 /* libfftw3_threads.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3_threads.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_threads.a; sourceTree = "<group>"; };
+		BA487CEC2CCEDD10009738E2 /* libfftw3l_mpi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3l_mpi.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_mpi.a; sourceTree = "<group>"; };
+		BA487CED2CCEDD10009738E2 /* libfftw3f_omp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f_omp.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_omp.a; sourceTree = "<group>"; };
+		BA487CEE2CCEDD10009738E2 /* libfftw3f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f.a; sourceTree = "<group>"; };
+		BA487CEF2CCEDD10009738E2 /* libfftw3_omp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3_omp.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_omp.a; sourceTree = "<group>"; };
+		BA487CF02CCEDD10009738E2 /* libfftw3l_omp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3l_omp.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_omp.a; sourceTree = "<group>"; };
+		BA487CF12CCEDD10009738E2 /* libfftw3l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3l.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l.a; sourceTree = "<group>"; };
+		BA487CF22CCEDD10009738E2 /* libfftw3f_mpi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f_mpi.a; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_mpi.a; sourceTree = "<group>"; };
+		BA487D0B2CCEE2A3009738E2 /* libfftw3l_mpi.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3l_mpi.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_mpi.3.dylib; sourceTree = "<group>"; };
+		BA487D0C2CCEE2A3009738E2 /* libfftw3l.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3l.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l.3.dylib; sourceTree = "<group>"; };
+		BA487D0D2CCEE2A3009738E2 /* libfftw3_omp.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3_omp.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_omp.3.dylib; sourceTree = "<group>"; };
+		BA487D0E2CCEE2A3009738E2 /* libfftw3f.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3f.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f.3.dylib; sourceTree = "<group>"; };
+		BA487D0F2CCEE2A3009738E2 /* libfftw3f_mpi.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3f_mpi.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_mpi.3.dylib; sourceTree = "<group>"; };
+		BA487D102CCEE2A3009738E2 /* libfftw3f_omp.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3f_omp.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_omp.3.dylib; sourceTree = "<group>"; };
+		BA487D112CCEE2A3009738E2 /* libfftw3l_threads.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3l_threads.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_threads.3.dylib; sourceTree = "<group>"; };
+		BA487D122CCEE2A4009738E2 /* libfftw3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3.3.dylib; sourceTree = "<group>"; };
+		BA487D132CCEE2A4009738E2 /* libfftw3l_omp.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3l_omp.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3l_omp.3.dylib; sourceTree = "<group>"; };
+		BA487D142CCEE2A4009738E2 /* libfftw3_mpi.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3_mpi.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_mpi.3.dylib; sourceTree = "<group>"; };
+		BA487D152CCEE2A4009738E2 /* libfftw3_threads.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3_threads.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3_threads.3.dylib; sourceTree = "<group>"; };
+		BA487D162CCEE2A4009738E2 /* libfftw3f_threads.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfftw3f_threads.3.dylib; path = ../../../../../../usr/local/Cellar/fftw/3.3.10_1/lib/libfftw3f_threads.3.dylib; sourceTree = "<group>"; };
 		BA6B4BA72CCB24A000EA358A /* output.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = output.bin; path = ../../output.bin; sourceTree = "<group>"; };
 		BA8198A62CC961DD00FCC5D4 /* LoRaPHY.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoRaPHY.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -41,8 +110,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA487D2B2CCEE2A4009738E2 /* libfftw3_threads.3.dylib in Frameworks */,
+				BA487D192CCEE2A4009738E2 /* libfftw3l.3.dylib in Frameworks */,
+				BA487D232CCEE2A4009738E2 /* libfftw3l_threads.3.dylib in Frameworks */,
+				BA487D042CCEE2A3009738E2 /* libfftw3f_omp.a in Frameworks */,
+				BA487D022CCEE2A3009738E2 /* libfftw3.a in Frameworks */,
+				BA487D1B2CCEE2A4009738E2 /* libfftw3_omp.3.dylib in Frameworks */,
+				BA487D272CCEE2A4009738E2 /* libfftw3l_omp.3.dylib in Frameworks */,
+				BA487D2D2CCEE2A4009738E2 /* libfftw3f_threads.3.dylib in Frameworks */,
+				BA487D212CCEE2A4009738E2 /* libfftw3f_omp.3.dylib in Frameworks */,
+				BA487D1D2CCEE2A4009738E2 /* libfftw3f.3.dylib in Frameworks */,
+				BA487D062CCEE2A3009738E2 /* libfftw3f.a in Frameworks */,
+				BA487D0A2CCEE2A3009738E2 /* libfftw3l.a in Frameworks */,
+				BA487D252CCEE2A4009738E2 /* libfftw3.3.dylib in Frameworks */,
+				BA487D002CCEE2A3009738E2 /* libfftw3_omp.a in Frameworks */,
+				BA487D092CCEE2A3009738E2 /* libfftw3l_threads.a in Frameworks */,
+				BA487D082CCEE2A3009738E2 /* libfftw3l_omp.a in Frameworks */,
+				BA487D052CCEE2A3009738E2 /* libfftw3f_threads.a in Frameworks */,
 				BA3608F52CAB5F1C00F110CD /* librtlsdr.a in Frameworks */,
-				BA3608F72CAB5F8000F110CD /* libfftw3.a in Frameworks */,
+				BA487CF62CCEDD22009738E2 /* libfftw3.a in Frameworks */,
+				BA487D012CCEE2A3009738E2 /* libfftw3_threads.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +169,29 @@
 		BA3608F32CAB5F1C00F110CD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BA487D142CCEE2A4009738E2 /* libfftw3_mpi.3.dylib */,
+				BA487D0D2CCEE2A3009738E2 /* libfftw3_omp.3.dylib */,
+				BA487D152CCEE2A4009738E2 /* libfftw3_threads.3.dylib */,
+				BA487D122CCEE2A4009738E2 /* libfftw3.3.dylib */,
+				BA487D0F2CCEE2A3009738E2 /* libfftw3f_mpi.3.dylib */,
+				BA487D102CCEE2A3009738E2 /* libfftw3f_omp.3.dylib */,
+				BA487D162CCEE2A4009738E2 /* libfftw3f_threads.3.dylib */,
+				BA487D0E2CCEE2A3009738E2 /* libfftw3f.3.dylib */,
+				BA487D0B2CCEE2A3009738E2 /* libfftw3l_mpi.3.dylib */,
+				BA487D132CCEE2A4009738E2 /* libfftw3l_omp.3.dylib */,
+				BA487D112CCEE2A3009738E2 /* libfftw3l_threads.3.dylib */,
+				BA487D0C2CCEE2A3009738E2 /* libfftw3l.3.dylib */,
+				BA487CE82CCEDD10009738E2 /* libfftw3_mpi.a */,
+				BA487CEF2CCEDD10009738E2 /* libfftw3_omp.a */,
+				BA487CEB2CCEDD10009738E2 /* libfftw3_threads.a */,
+				BA487CF22CCEDD10009738E2 /* libfftw3f_mpi.a */,
+				BA487CED2CCEDD10009738E2 /* libfftw3f_omp.a */,
+				BA487CE92CCEDD10009738E2 /* libfftw3f_threads.a */,
+				BA487CEE2CCEDD10009738E2 /* libfftw3f.a */,
+				BA487CEC2CCEDD10009738E2 /* libfftw3l_mpi.a */,
+				BA487CF02CCEDD10009738E2 /* libfftw3l_omp.a */,
+				BA487CEA2CCEDD10009738E2 /* libfftw3l_threads.a */,
+				BA487CF12CCEDD10009738E2 /* libfftw3l.a */,
 				BA3608F62CAB5F8000F110CD /* libfftw3.a */,
 				BA3608F42CAB5F1C00F110CD /* librtlsdr.a */,
 			);
@@ -98,6 +208,7 @@
 				BA3608E22CAB59F400F110CD /* Sources */,
 				BA3608E32CAB59F400F110CD /* Frameworks */,
 				BA3608E42CAB59F400F110CD /* CopyFiles */,
+				BA487D2F2CCEE2A4009738E2 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -281,6 +392,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"/usr/local/Cellar/librtlsdr/2.0.2/lib/**",
 					"/usr/local/Cellar/fftw/3.3.10_1/lib/**",
+					"/usr/local/Cellar/fftw/3.3.10_1/lib/**",
+					/usr/local/lib,
 					/usr/local/Cellar/fftw/3.3.10_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -301,6 +414,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"/usr/local/Cellar/librtlsdr/2.0.2/lib/**",
 					"/usr/local/Cellar/fftw/3.3.10_1/lib/**",
+					"/usr/local/Cellar/fftw/3.3.10_1/lib/**",
+					/usr/local/lib,
 					/usr/local/Cellar/fftw/3.3.10_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
