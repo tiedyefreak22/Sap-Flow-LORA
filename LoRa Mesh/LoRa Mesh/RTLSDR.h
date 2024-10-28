@@ -107,7 +107,7 @@ void callback(unsigned char *buf, uint32_t len, void *ctx) {
     }
 }
 
-std::vector<Sample> receive_rtl_sdr(rtlsdr_dev_t *dev) {
+Sample* receive_rtl_sdr(rtlsdr_dev_t *dev) {
     // Reset buffer before starting
     if (rtlsdr_reset_buffer(dev) != 0) {
         fprintf(stderr, "Error resetting buffer\n");
@@ -116,7 +116,7 @@ std::vector<Sample> receive_rtl_sdr(rtlsdr_dev_t *dev) {
     }
 
     // Read samples (blocking mode, synchronous)
-    std::vector<Sample>* buffer = (std::vector<Sample> *)malloc(SAMPLES * 2 * sizeof(uint8_t));
+    Sample* buffer = (Sample*)malloc(SAMPLES * 2 * sizeof(uint8_t));
     if (buffer == NULL) {
         fprintf(stderr, "Memory allocation error\n");
         rtlsdr_close(dev);
@@ -129,11 +129,11 @@ std::vector<Sample> receive_rtl_sdr(rtlsdr_dev_t *dev) {
         rtlsdr_close(dev);
         //return NULL;
     }
-    return *buffer;
+    return buffer;
 }
 
 // Function to read a binary file containing I/Q samples
-std::vector<Sample> readBinaryFile(const char* filename, size_t* sampleCount) {
+Sample* readBinaryFile(const char* filename, size_t* sampleCount) {
     // Open the binary file
     FILE* file = fopen(filename, "rb");
     if (!file) {
@@ -150,7 +150,7 @@ std::vector<Sample> readBinaryFile(const char* filename, size_t* sampleCount) {
     *sampleCount = fileSize / (sizeof(float) * 2);
     
     // Allocate memory for samples
-    std::vector<Sample>* samples = (std::vector<Sample>*)malloc(*sampleCount * sizeof(Sample));
+    Sample* samples = (Sample*)malloc(*sampleCount * sizeof(Sample));
     if (!samples) {
         perror("Memory allocation failed");
         fclose(file);
@@ -167,7 +167,7 @@ std::vector<Sample> readBinaryFile(const char* filename, size_t* sampleCount) {
     }
 
     fclose(file); // Close the file
-    return *samples; // Return the pointer to the samples
+    return samples; // Return the pointer to the samples
 }
 
 #endif /* RTLSDR_h */
