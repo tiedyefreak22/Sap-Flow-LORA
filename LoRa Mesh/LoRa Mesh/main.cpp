@@ -16,7 +16,6 @@
 #include <cstring> // For strlen
 
 int load_data = 0;
-int SDR = 0;
 int sim_data = 1;
 
 // LoRa Parameters
@@ -26,19 +25,22 @@ int BW = 125e3 ; // Bandwidth
 int Fs = 1e6;  // sampling freq
 int fc = 915e6 ;  // carrier center frequency
 float noise_sigma = 0.0;
-const char* message = "Hello world!";
+std::string message = "Hello world!";
+std::vector<int> message_symbols(message.begin(), message.end());
 int numPreambleSymbols = 8; // Standard LoRa preamble symbol count
 double symbolRate = BW / (2^SF); // Symbol rate
 int shift = 0;
+uint8_t sync_word = 0x34;          // Default sync word
 
 // LoRa Setup
 LoRaPHY phy(fc, SF, BW, Fs);
+//phy.setPreambleLength(numPreambleSymbols); // Set preamble length (if applicable)
 
 int main(int argc, const char * argv[]) {
     try {
         //std::vector<Sample> samples;
         Sample* samples;
-        int modulated_length;
+        int modulated_length = 0;
         
         if (load_data) {
             // Load data from a .bin file
@@ -55,26 +57,24 @@ int main(int argc, const char * argv[]) {
                 printf("Sample %zu: I = %f, Q = %f\n", i, samples[i].I, samples[i].Q);
             }
         } else if (sim_data) {
-            // Encode payload
-            printf("[encode] message: %s\n", message);
-            
-            std::vector<int> preencoded_data;
-
-            // Convert each character to an integer and apply encoding steps
-            for (size_t i = 0; i < sizeof(message); ++i) {
-                preencoded_data.push_back(static_cast<int>(message[i])); // Convert char to int
-            }
-
-            // Directly encode, modulate, demodulate, and decode without transformations
-            std::vector<int> encoded_data = phy.encode(preencoded_data);
+            // Modulate the encoded data into a complex sample array
             int modulated_length;
-            samples = phy.modulate(encoded_data, modulated_length);
+            Sample* modulated_signal = phy.modulate(message_symbols, modulated_length);
+
+            // Debug output to visualize the encoded and modulated signal
+            std::cout << "[main] Encoded data: ";
+            for (int value : message_symbols) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
+
+            std::cout << "[main] Modulated signal (first few samples): ";
+            for (int i = 0; i < std::min(modulated_length, 10); ++i) {
+                std::cout << "(" << modulated_signal[i].I << ", " << modulated_signal[i].Q << ") ";
+            }
+            std::cout << std::endl;
             
-//            for (size_t i = 0; i < sizeof(samples); i++) {
-//                printf("%f, %f\n", samples[i].I, samples[i].Q);
-//            }
-            
-        } else if (SDR) {
+        } else if (~sim_data and ~load_data) {
             // Capture data from RTL-SDR
             init_rtl_sdr();
             samples = receive_rtl_sdr(dev);
@@ -88,24 +88,18 @@ int main(int argc, const char * argv[]) {
 //        new_received_signal = ifft(new_received_fft(:,1));
 //
         // Step 3: Demodulate the received signal
-        // Sample test without whitening and error correction
-        // Demodulate the received signal
-        auto [demodulated_symbols, header_valid] = phy.demodulate(samples, modulated_length);
+        // Demodulate and decode the received signal
+        auto [demodulated_data, success] = phy.demodulate(samples, modulated_length);
 
-        if (!header_valid) {
-            std::cerr << "Header is invalid, transmission may be corrupted." << std::endl;
+        // Check if decoding was successful
+        if (success) {
+            // Convert the decoded data back to a string
+            std::string decoded_message(demodulated_data.begin(), demodulated_data.end());
+            std::cout << "[main] Decoded message: " << decoded_message << std::endl;
         } else {
-            auto [decoded_data, crc_valid] = phy.decode(demodulated_symbols);
-            // Print received data if CRC passes
-            if (crc_valid) {
-                for (int byte : decoded_data) {
-                    std::cout << static_cast<char>(byte);
-                }
-            } else {
-                std::cerr << "CRC check failed, data may be corrupted." << std::endl;
-            }
+            std::cerr << "[main] Decoding failed. Transmission may be corrupted." << std::endl;
         }
-
+        
         // Clean up dynamically allocated memory
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -126,6 +120,4 @@ int main(int argc, const char * argv[]) {
     }
 
     return 0;
-
-    
 }

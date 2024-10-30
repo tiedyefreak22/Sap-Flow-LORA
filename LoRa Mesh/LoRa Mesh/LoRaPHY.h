@@ -14,9 +14,9 @@ public:
     LoRaPHY(double rf_freq, int sf, double bw, double fs, uint8_t sync_word = 0x34)
     : rf_freq(rf_freq), sf(sf), bw(bw), fs(fs), sync_word(sync_word), cfo(0.0), symbol_timing_offset(0), crc_enabled(true), has_header(true), whitening_sequence(generate_whiten_sequence(255)) {
         initialize_header_checksum_matrix();
-        debug_whitening_sequence();
     }
 
+    // Modulation
     Sample* modulate(const std::vector<int>& symbols, int& length) {
         Sample* preamble_signal = generate_preamble(sync_word);
         int preamble_length = preamble_len * (2 * std::pow(2, sf));
@@ -41,33 +41,22 @@ public:
         return full_signal;
     }
 
+    // Demodulation
     std::pair<std::vector<int>, bool> demodulate(const Sample* signal, int length) {
-        cfo = estimate_cfo(signal, length);
-        symbol_timing_offset = recover_symbol_timing(signal, length);
-
-        int header_symbol_count = 8;
-        auto [header_symbols, data_start] = demodulate_symbols(signal, header_symbol_count, true);
-        
+        auto [header_symbols, data_start] = demodulate_symbols(signal, 8, true);
         std::cout << "Demodulated Header Symbols: ";
-        for (int val : header_symbols) {
-            std::cout << val << " ";
-        }
+        for (int val : header_symbols) std::cout << val << " ";
         std::cout << std::endl;
 
         auto dewhitened_header = dewhiten(header_symbols);
-        
         std::cout << "Dewhitened Header: ";
-        for (int val : dewhitened_header) {
-            std::cout << val << " ";
-        }
+        for (int val : dewhitened_header) std::cout << val << " ";
         std::cout << std::endl;
 
         auto [decoded_header, valid_header] = decode(dewhitened_header);
 
         std::cout << "Decoded Header: ";
-        for (int val : decoded_header) {
-            std::cout << val << " ";
-        }
+        for (int val : decoded_header) std::cout << val << " ";
         std::cout << std::endl;
         if (!valid_header) {
             std::cerr << "Header is invalid, transmission may be corrupted." << std::endl;
@@ -75,23 +64,16 @@ public:
         }
 
         int payload_length = decoded_header[1];
-        int data_symbol_count = payload_length;
-
-        auto [data_symbols, _] = demodulate_symbols(signal, data_symbol_count, false, data_start);
-        
+        auto [data_symbols, _] = demodulate_symbols(signal, payload_length, false, data_start);
         std::cout << "Demodulated Data Symbols: ";
-        for (int val : data_symbols) {
-            std::cout << val << " ";
-        }
+        for (int val : data_symbols) std::cout << val << " ";
         std::cout << std::endl;
 
         auto dewhitened_data = dewhiten(data_symbols);
         auto [decoded_data, valid_crc] = decode(dewhitened_data);
 
         std::cout << "Decoded Data: ";
-        for (int val : decoded_data) {
-            std::cout << val << " ";
-        }
+        for (int val : decoded_data) std::cout << val << " ";
         std::cout << std::endl;
         if (!valid_crc) {
             std::cerr << "CRC check failed, data may be corrupted." << std::endl;
@@ -101,154 +83,35 @@ public:
         return {decoded_data, true};
     }
 
+    // Encoding
     std::vector<int> encode(const std::vector<int>& data) {
-        std::vector<int> encoded_data = hamming_encode(data);
+        auto encoded_data = hamming_encode(data);
         encoded_data = gray_code(encoded_data);
         encoded_data = diagonal_interleave(encoded_data);
         return encoded_data;
     }
     
+    // Decoding
     std::pair<std::vector<int>, bool> decode(const std::vector<int>& symbols) {
-        std::vector<int> deinterleaved_symbols = diagonal_deinterleave(symbols);
-        std::vector<int> gray_decoded_symbols = gray_decode(deinterleaved_symbols);
-        std::vector<int> hamming_decoded_data = hamming_decode(gray_decoded_symbols);
-
+        auto deinterleaved_symbols = diagonal_deinterleave(symbols);
+        auto gray_decoded_symbols = gray_decode(deinterleaved_symbols);
+        auto hamming_decoded_data = hamming_decode(gray_decoded_symbols);
         bool checksum_valid = crc_enabled ? compute_crc(hamming_decoded_data) : true;
         return {hamming_decoded_data, checksum_valid};
     }
-    
-    std::vector<int> whiten(const std::vector<int>& data) {
-        std::cout << "Data before whitening: ";
-        for (int val : data) {
-            std::cout << val << " ";
-        }
-        std::cout << std::endl;
 
+    // Whitening function
+    std::vector<int> whiten(const std::vector<int>& data) {
         std::vector<int> whitened_data(data.size());
         for (size_t i = 0; i < data.size(); ++i) {
             whitened_data[i] = data[i] ^ whitening_sequence[i % whitening_sequence.size()];
         }
-
-        std::cout << "Data after whitening: ";
-        for (int val : whitened_data) {
-            std::cout << val << " ";
-        }
-        std::cout << std::endl;
-
         return whitened_data;
     }
 
+    // Dewhitening function
     std::vector<int> dewhiten(const std::vector<int>& data) {
         return whiten(data);
-    }
-
-    std::vector<int> hamming_encode(const std::vector<int>& data) {
-        std::vector<int> encoded_data;
-        for (int byte : data) {
-            int d1 = (byte >> 3) & 1;
-            int d2 = (byte >> 2) & 1;
-            int d3 = (byte >> 1) & 1;
-            int d4 = byte & 1;
-            int p1 = d1 ^ d2 ^ d4;
-            int p2 = d1 ^ d3 ^ d4;
-            int p3 = d2 ^ d3 ^ d4;
-            int encoded_byte = (p1 << 6) | (p2 << 5) | (d1 << 4) | (p3 << 3) | (d2 << 2) | (d3 << 1) | d4;
-            encoded_data.push_back(encoded_byte);
-        }
-        return encoded_data;
-    }
-
-    std::vector<int> gray_code(const std::vector<int>& data) {
-        std::vector<int> gray_coded_data;
-        for (int value : data) {
-            int gray_value = value ^ (value >> 1);
-            std::cout << "Gray encoded " << value << " -> " << gray_value << std::endl;
-            gray_coded_data.push_back(gray_value);
-        }
-        return gray_coded_data;
-    }
-
-    std::vector<int> diagonal_interleave(const std::vector<int>& data) {
-        int M = sf;
-        int N = (data.size() / M) * M;
-        std::vector<int> interleaved_data(N);
-
-        for (int i = 0; i < M; ++i) {
-            for (int j = 0; j < M; ++j) {
-                int idx = j * M + ((i + j) % M);
-                if (idx < N) {
-                    interleaved_data[idx] = data[i * M + j];
-                }
-            }
-        }
-        return interleaved_data;
-    }
-
-    std::vector<int> diagonal_deinterleave(const std::vector<int>& data) {
-        int M = sf;
-        int N = (data.size() / M) * M;
-        std::vector<int> deinterleaved_data(N);
-
-        for (int i = 0; i < M; ++i) {
-            for (int j = 0; j < M; ++j) {
-                int idx = j * M + ((i + j) % M);
-                if (idx < N) {
-                    deinterleaved_data[i * M + j] = data[idx];
-                }
-            }
-        }
-        return deinterleaved_data;
-    }
-
-    std::vector<int> gray_decode(const std::vector<int>& data) {
-        std::vector<int> gray_decoded_data;
-        for (int value : data) {
-            int decoded = value;
-            int mask = value >> 1;
-            while (mask != 0) {
-                decoded ^= mask;
-                mask >>= 1;
-            }
-            gray_decoded_data.push_back(decoded);
-        }
-        return gray_decoded_data;
-    }
-
-    std::vector<int> hamming_decode(const std::vector<int>& data) {
-        std::vector<int> decoded_data;
-        for (int encoded_byte : data) {
-            int p1 = (encoded_byte >> 6) & 1;
-            int p2 = (encoded_byte >> 5) & 1;
-            int d1 = (encoded_byte >> 4) & 1;
-            int p3 = (encoded_byte >> 3) & 1;
-            int d2 = (encoded_byte >> 2) & 1;
-            int d3 = (encoded_byte >> 1) & 1;
-            int d4 = encoded_byte & 1;
-
-            int s1 = p1 ^ d1 ^ d2 ^ d4;
-            int s2 = p2 ^ d1 ^ d3 ^ d4;
-            int s3 = p3 ^ d2 ^ d3 ^ d4;
-            int syndrome = (s1 << 2) | (s2 << 1) | s3;
-
-            if (syndrome != 0) {
-                encoded_byte ^= (1 << (7 - syndrome));
-            }
-
-            int decoded_byte = (d1 << 3) | (d2 << 2) | (d3 << 1) | d4;
-            decoded_data.push_back(decoded_byte);
-        }
-        return decoded_data;
-    }
-
-    bool compute_crc(const std::vector<int>& data) {
-        uint16_t crc = 0xFFFF;
-        for (int byte : data) {
-            crc ^= static_cast<uint8_t>(byte) << 8;
-            for (int i = 0; i < 8; ++i) {
-                crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
-            }
-        }
-        return crc == 0;
     }
 
 private:
@@ -265,6 +128,7 @@ private:
     std::vector<int> whitening_sequence;
     int header_checksum_matrix[5][12];
 
+    // Initialize header checksum matrix
     void initialize_header_checksum_matrix() {
         int matrix[5][12] = {
             {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -276,6 +140,7 @@ private:
         std::copy(&matrix[0][0], &matrix[0][0] + 5 * 12, &header_checksum_matrix[0][0]);
     }
 
+    // Create header
     std::vector<int> create_header(int payload_length) {
         std::vector<int> header(5, 0);
         header[0] = 0;
@@ -293,14 +158,13 @@ private:
         header[4] = static_cast<int>(checksum.to_ulong());
 
         std::cout << "Created Header: ";
-        for (int val : header) {
-            std::cout << val << " ";
-        }
+        for (int val : header) std::cout << val << " ";
         std::cout << std::endl;
 
         return header;
     }
 
+    // Calculate checksum using matrix
     std::bitset<12> calculate_matrix_checksum(const std::vector<int>& data_bits) {
         std::bitset<12> checksum;
         for (int col = 0; col < 12; ++col) {
@@ -310,18 +174,38 @@ private:
             }
             checksum[col] = sum % 2;
         }
-        std::cout << "Checksum (bitset): " << checksum << std::endl;
         return checksum;
     }
 
-    void debug_whitening_sequence() {
-        std::cout << "Whitening sequence: ";
-        for (int val : whitening_sequence) {
-            std::cout << val << " ";
+    // Generate whitening sequence
+    std::vector<int> generate_whiten_sequence(int length) {
+        std::vector<int> sequence(length);
+        uint8_t reg = 0xFF;
+        for (int i = 0; i < length; ++i) {
+            sequence[i] = reg;
+            reg = (reg << 1) ^ ((reg & 0x80) ? 0xE1 : 0);
         }
-        std::cout << std::endl;
+        return sequence;
     }
 
+    // Generate preamble
+    Sample* generate_preamble(uint8_t sync_word) {
+        int samples_per_symbol = 2 * std::pow(2, sf);
+        Sample* preamble_signal = new Sample[samples_per_symbol * preamble_len];
+        Sample* sync_chirp = chirp(true, sf, bw, fs, sync_word, 0, samples_per_symbol);
+
+        for (int i = 0; i < preamble_len - 1; ++i) {
+            Sample* upchirp = chirp(true, sf, bw, fs, 0, 0, samples_per_symbol);
+            std::copy(upchirp, upchirp + samples_per_symbol, preamble_signal + i * samples_per_symbol);
+            delete[] upchirp;
+        }
+        std::copy(sync_chirp, sync_chirp + samples_per_symbol, preamble_signal + (preamble_len - 1) * samples_per_symbol);
+
+        delete[] sync_chirp;
+        return preamble_signal;
+    }
+
+    // Modulate symbols into chirp signals
     Sample* modulate_symbols(const std::vector<int>& symbols, int& length) {
         int samples_per_symbol = 2 * std::pow(2, sf);
         length = symbols.size() * samples_per_symbol;
@@ -335,6 +219,7 @@ private:
         return result;
     }
 
+    // Estimate CFO
     double estimate_cfo(const Sample* signal, int length) {
         int samples_per_symbol = 2 * std::pow(2, sf);
         int preamble_samples = preamble_len * samples_per_symbol;
@@ -372,6 +257,7 @@ private:
         return frequency_offset;
     }
 
+    // Recover symbol timing
     int recover_symbol_timing(const Sample* signal, int length) {
         int samples_per_symbol = 2 * std::pow(2, sf);
         int preamble_samples = preamble_len * samples_per_symbol;
@@ -408,6 +294,7 @@ private:
         return peak_index;
     }
 
+    // Demodulate symbols
     std::pair<std::vector<int>, int> demodulate_symbols(const Sample* signal, int symbol_count, bool apply_cfo, int start = 0) {
         int samples_per_symbol = 2 * std::pow(2, sf);
         std::vector<int> symbols;
@@ -454,32 +341,6 @@ private:
         return peak_index;
     }
 
-    std::vector<int> generate_whiten_sequence(int length) {
-        std::vector<int> sequence(length);
-        uint8_t reg = 0xFF;
-        for (int i = 0; i < length; ++i) {
-            sequence[i] = reg;
-            reg = (reg << 1) ^ ((reg & 0x80) ? 0xE1 : 0);
-        }
-        return sequence;
-    }
-
-    Sample* generate_preamble(uint8_t sync_word) {
-        int samples_per_symbol = 2 * std::pow(2, sf);
-        Sample* preamble_signal = new Sample[samples_per_symbol * preamble_len];
-        Sample* sync_chirp = chirp(true, sf, bw, fs, sync_word, 0, samples_per_symbol);
-
-        for (int i = 0; i < preamble_len - 1; ++i) {
-            Sample* upchirp = chirp(true, sf, bw, fs, 0, 0, samples_per_symbol);
-            std::copy(upchirp, upchirp + samples_per_symbol, preamble_signal + i * samples_per_symbol);
-            delete[] upchirp;
-        }
-        std::copy(sync_chirp, sync_chirp + samples_per_symbol, preamble_signal + (preamble_len - 1) * samples_per_symbol);
-
-        delete[] sync_chirp;
-        return preamble_signal;
-    }
-
     Sample* chirp(bool is_up, int sf, double bw, double fs, double freq_offset, double cfo, int samples) {
         int N = (samples > 0) ? samples : static_cast<int>(2 * std::pow(2, sf));
         Sample* chirp_signal = new Sample[N];
@@ -493,14 +354,117 @@ private:
             chirp_signal[n].I = cos(phase);
             chirp_signal[n].Q = sin(phase);
         }
-
-        std::cout << "Chirp signal: ";
-        for (int i = 0; i < N; ++i) {
-            std::cout << "(" << chirp_signal[i].I << ", " << chirp_signal[i].Q << ") ";
-        }
-        std::cout << std::endl;
-
         return chirp_signal;
+    }
+
+    // Interleaving and encoding functions
+    std::vector<int> diagonal_interleave(const std::vector<int>& data) {
+        int M = sf;
+        int N = (data.size() / M) * M;
+        std::vector<int> interleaved_data(N);
+
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < M; ++j) {
+                int idx = j * M + ((i + j) % M);
+                if (idx < N) {
+                    interleaved_data[idx] = data[i * M + j];
+                }
+            }
+        }
+        return interleaved_data;
+    }
+
+    std::vector<int> diagonal_deinterleave(const std::vector<int>& data) {
+        int M = sf;
+        int N = (data.size() / M) * M;
+        std::vector<int> deinterleaved_data(N);
+
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < M; ++j) {
+                int idx = j * M + ((i + j) % M);
+                if (idx < N) {
+                    deinterleaved_data[i * M + j] = data[idx];
+                }
+            }
+        }
+        return deinterleaved_data;
+    }
+
+    std::vector<int> gray_code(const std::vector<int>& data) {
+        std::vector<int> gray_coded_data;
+        for (int value : data) {
+            gray_coded_data.push_back(value ^ (value >> 1));
+        }
+        return gray_coded_data;
+    }
+
+    std::vector<int> gray_decode(const std::vector<int>& data) {
+        std::vector<int> gray_decoded_data;
+        for (int value : data) {
+            int decoded = value;
+            int mask = value >> 1;
+            while (mask != 0) {
+                decoded ^= mask;
+                mask >>= 1;
+            }
+            gray_decoded_data.push_back(decoded);
+        }
+        return gray_decoded_data;
+    }
+
+    std::vector<int> hamming_encode(const std::vector<int>& data) {
+        std::vector<int> encoded_data;
+        for (int byte : data) {
+            int d1 = (byte >> 3) & 1;
+            int d2 = (byte >> 2) & 1;
+            int d3 = (byte >> 1) & 1;
+            int d4 = byte & 1;
+
+            int p1 = d1 ^ d2 ^ d4;
+            int p2 = d1 ^ d3 ^ d4;
+            int p3 = d2 ^ d3 ^ d4;
+
+            int encoded_byte = (p1 << 6) | (p2 << 5) | (d1 << 4) | (p3 << 3) | (d2 << 2) | (d3 << 1) | d4;
+            encoded_data.push_back(encoded_byte);
+        }
+        return encoded_data;
+    }
+
+    std::vector<int> hamming_decode(const std::vector<int>& data) {
+        std::vector<int> decoded_data;
+        for (int encoded_byte : data) {
+            int p1 = (encoded_byte >> 6) & 1;
+            int p2 = (encoded_byte >> 5) & 1;
+            int d1 = (encoded_byte >> 4) & 1;
+            int p3 = (encoded_byte >> 3) & 1;
+            int d2 = (encoded_byte >> 2) & 1;
+            int d3 = (encoded_byte >> 1) & 1;
+            int d4 = encoded_byte & 1;
+
+            int s1 = p1 ^ d1 ^ d2 ^ d4;
+            int s2 = p2 ^ d1 ^ d3 ^ d4;
+            int s3 = p3 ^ d2 ^ d3 ^ d4;
+            int syndrome = (s1 << 2) | (s2 << 1) | s3;
+
+            if (syndrome != 0) {
+                encoded_byte ^= (1 << (7 - syndrome));
+            }
+
+            int decoded_byte = (d1 << 3) | (d2 << 2) | (d3 << 1) | d4;
+            decoded_data.push_back(decoded_byte);
+        }
+        return decoded_data;
+    }
+
+    bool compute_crc(const std::vector<int>& data) {
+        uint16_t crc = 0xFFFF;
+        for (int byte : data) {
+            crc ^= static_cast<uint8_t>(byte) << 8;
+            for (int i = 0; i < 8; ++i) {
+                crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+            }
+        }
+        return crc == 0;
     }
 };
 
