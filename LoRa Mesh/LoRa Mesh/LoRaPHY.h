@@ -12,8 +12,29 @@
 class LoRaPHY {
 public:
     LoRaPHY(double rf_freq, int sf, double bw, double fs, uint8_t sync_word = 0x34)
-    : rf_freq(rf_freq), sf(sf), bw(bw), fs(fs), sync_word(sync_word), cfo(0.0), symbol_timing_offset(0), crc_enabled(true), has_header(true), whitening_sequence(generate_whiten_sequence(255)) {
+    : rf_freq(rf_freq), sf(sf), bw(bw), fs(fs), sync_word(sync_word), cfo(0.0), symbol_timing_offset(0), fast_mode(true), is_debug(true), crc_enabled(true), has_header(true), hamming_decoding_en(true), zero_padding_ratio(10), preamble_len(6), whitening_sequence(generate_whiten_sequence(255)) {
         initialize_header_checksum_matrix();
+        init();
+    }
+
+    void init() {
+        // Initialize some parameters
+        bin_num = 2^sf * zero_padding_ratio;
+        sample_num = 2 * 2^sf;
+        fft_len = sample_num * zero_padding_ratio;
+
+        downchirp = chirp(false, sf, bw, fs, 0, cfo, 0);
+        upchirp = chirp(true, sf, bw, fs, 0, cfo, 0);
+
+        // Low Data Rate Optimization (LDRO) mode in LoRa
+        // If the chirp period is larger than 16ms, the least significant
+        // two bits are considered unreliable and are neglected.
+        if ((std::pow(2, sf)/bw) > 16e-3) {
+            ldr = 1;
+        }
+        else {
+            ldr = 0;
+        }
     }
 
     // Modulation
@@ -120,13 +141,30 @@ private:
     double bw;
     double fs;
     uint8_t sync_word;
-    int preamble_len = 6;
+    int preamble_len;
     double cfo;
     int symbol_timing_offset;
     bool crc_enabled;
     bool has_header;
     std::vector<int> whitening_sequence;
     int header_checksum_matrix[5][12];
+    int cr;                   // code rate: (1:4/5 2:4/6 3:4/7 4:4/8)
+    int payload_len;          // payload length
+    bool ldr;                 // ldr = 1 if Low Data Rate Optimization is enabled else 0
+    
+//    crc_generator           // CRC generator with polynomial x^16+x^12+x^5+1
+    Sample* sig;              // input baseband signal
+    Sample* downchirp;        // ideal chirp with decreasing frequency from B/2 to -B/2
+    Sample* upchirp;          // ideal chirp with increasing frequency from -B/2 to B/2
+    int sample_num;           // number of sample points per symbol
+    int bin_num;              // number of bins after FFT (with zero padding)
+    int zero_padding_ratio;   // FFT zero padding ratio
+    int fft_len;              // FFT size
+    int preamble_bin;         // reference bin in current decoding window, used to eliminate CFO
+    bool fast_mode;           // set `true` for fast execution (ignore low-pass filter)
+    bool is_debug;            // set `true` for debug information
+    bool hamming_decoding_en; // enable hamming decoding
+    
 
     // Initialize header checksum matrix
     void initialize_header_checksum_matrix() {

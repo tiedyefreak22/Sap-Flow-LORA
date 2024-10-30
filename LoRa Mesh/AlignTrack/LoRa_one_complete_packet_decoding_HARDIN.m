@@ -55,7 +55,6 @@ while true
         
         % Baseband Modulation
         signalIQ1 = phy.modulate(symbols);
-        display(signalIQ1(24572:24578))
         figure(1)
         spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
         noise=noise_sigma*randn(length(signalIQ1),1);
@@ -173,7 +172,4 @@ while true
     disp(data);
     fprintf("[decode] checksum:\n");
     disp(checksum);
-    
-    str = char(data(1:end-2));
-    disp(str.');
 end

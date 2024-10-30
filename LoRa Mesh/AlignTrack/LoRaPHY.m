@@ -399,7 +399,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             x = header_checksum.x;
             header_nibbles(4) = x(1);
             for i = 1:4
-                header_nibbles(5) = bitor(header_nibbles(5), x(i+1)*2^(4-i))
+                header_nibbles(5) = bitor(header_nibbles(5), x(i+1)*2^(4-i));
             end
         end
 
