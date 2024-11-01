@@ -10,23 +10,30 @@ fc = 915e6 ;  % carrier center frequency
 Power = 14 ;  % Tx power 14 dB
 noise_sigma=1;
 message = "Hello akanksha!" ;
+message2 = "Hello AlignTrack!" ;
 Fc = 921.5e6; % spectrum center frequency
 df=Fc-fc;   % if CFO exists
 shift=0;
+payload_offset = 10000;
 %% CSS modulated Signal
-[signalIQ1] = LoRa_Tx_new(message,BW,SF,Power,Fs) ;
+signalIQ1 = [LoRa_Tx_new(message,BW,SF,Power,Fs); zeros(payload_offset + length(LoRa_Tx_new(message2,BW,SF,Power,Fs)) - length(LoRa_Tx_new(message,BW,SF,Power,Fs)), 1)];
+signalIQ2 = [zeros(payload_offset, 1); LoRa_Tx_new(message,BW,SF,Power,Fs)];
+signalIQ3 = signalIQ1 + signalIQ2;
+
 % spectrogram for one LoRa packet
 figure(1)
-spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
+spectrogram(signalIQ3,1000,0,1000,Fs,'yaxis','centered')
 %AWGN noise
-noise=noise_sigma*randn(length(signalIQ1),1);
+noise=noise_sigma*randn(length(signalIQ3),1);
 % signal recieved at  LoRa gateway
-recieved_signal=signalIQ1+noise;
+recieved_signal=signalIQ3+noise;
 % recieved signal after windowing and FFT
-[recieved_fft] = LoRa_demod_1(recieved_signal,SF,BW,Fs,shift);
-new_recieved_fft=recieved_fft;
+[recieved_fft] = LoRa_demod_1(recieved_signal,SF,BW,Fs,0);
+new_recieved_fft(1,:)=recieved_fft.';
+[recieved_fft] = LoRa_demod_1(recieved_signal,SF,BW,Fs,payload_offset);
+new_recieved_fft(2,:)=recieved_fft.';
 % peak extraction algorith with align track decoding for complete packet
-[m n]=size(recieved_fft);
+[m n]=size(new_recieved_fft);
 for j1=0:1:m-1
     for i1=1:1:n
         [val(j1+1),idx(j1+1)]=max(new_recieved_fft(j1+1,:));
@@ -107,6 +114,7 @@ for ee=1:1:m1
                 end
             end
         end
+        i
     end
     AA=AA(issidelobe~=1);
 end

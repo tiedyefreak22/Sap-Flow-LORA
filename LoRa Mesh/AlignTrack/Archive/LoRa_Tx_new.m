@@ -2,7 +2,7 @@ function [signal_mod] = LoRa_Tx_new(message,Bandwidth,SF,Pt,Fs,varargin)
 % LoRa_Tx emulates a Lora transmission
 %
 %   in:  message      payload message
-%        Bandwidth    signal bandwidth of LoRa transmisson
+%        Bandwidth    signal bandwidth of LoRa transmisson  
 %        SF           spreading factor
 %        Pt           transmit power in deicbels
 %        Fs           sampling frequency
@@ -35,15 +35,14 @@ signal = LoRa_Modulate_Full(payload,SF,Bandwidth,n_preamble,SyncKey,Fs) ; % LoRa
 signal_mod = 10.^(Pt./20).*signal ;
 % signal_mod = 10.^(Pt./20).*signal.*exp(-j.*2.*pi.*df/Fs.*(0:length(signal)-1))' ; % use when CFO is present. frequency shift and convert to power
 end
-
 function [payload] = LoRa_Encode_Full(message,SF,CR)
 % LoRa_Encode_Full emulates a Lora transmission
 %
 %   in:  message      payload message
 %        SF           spreading factor
-%        CR           coding rate
+%        CR           coding rate 
 %
-%  out:  packet       encoded lora packet
+%  out:  packet       encoded lora packet 
 CRC_pld = 1 ;  % cyclic rate code flag
 imp = 0 ;
 opt = 0 ;
@@ -61,14 +60,13 @@ CRC_dbl = CRC_pld.*[1 1] ; % CRC is not working atm
 pad_dbl = zeros(1,n_pad + N_pld - 1) ; % padding
 payload = double([255 255 0 0 message_dbl 0 CRC_dbl pad_dbl]);  % LoRa payload
 end
-
 function [signal] = LoRa_Modulate_Full(payload,SF,Bandwidth,n_preamble,SyncKey,Fs)
 % LoRa_Modulate_Full constructs a lora packet (preamble + sync header + payload)
 %
-%   in:  payload         payload 1xN symbol vector wher N=1-Inf
+%   in:  payload         payload 1xN symbol vector wher N=1-Inf 
 %                       with values {0,1,2,...,2^(SF)-1}
-%        SF             spreading factor
-%        Bandwidth      signal bandwidth of LoRa transmisson
+%        SF             spreading factor   
+%        Bandwidth      signal bandwidth of LoRa transmisson  
 %        n_preamble     number of symbols in the preamble
 %        SyncKey        synchronize key
 %        Fs             sampling frequency
@@ -81,14 +79,13 @@ signal_sync_d = [signal_sync_d1; signal_sync_d1; signal_sync_d1(1:length(signal_
 signal_mesg = loramod(mod(payload + SyncKey,2^SF),SF,Bandwidth,Fs,1) ; % add sync key to payload messaage
 signal = [signal_prmb; signal_sync_u; signal_sync_d; signal_mesg];  % concatenate LoRa packet
 end
-
 function [y] = loramod(x,SF,BW,fs,varargin)
 % loramod LoRa modulates a symbol vector specified by x
 %
-%   in:  x          1xN symbol vector
+%   in:  x          1xN symbol vector  
 %                   with values {0,1,2,...,2^(SF)-1}
-%        BW         signal bandwidth of LoRa transmisson
-%        SF         spreading factor
+%        BW         signal bandwidth of LoRa transmisson  
+%        SF         spreading factor   
 %        Fs         sampling frequency
 %        varargin{1} polarity of chirp
 %

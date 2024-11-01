@@ -1,18 +1,17 @@
-function [received_fft] = LoRa_demod_1(signal,SF,BW,Fs,shift)
+function [recieved_fft] = LoRa_demod_1(signal,SF,BW,Fs,shift)
 % LoRa_Demodulate_Full demodulates full LoRa packet
 
 %% Return if SF is not in the range
 if SF > 12 || SF < 7
     return
 end
-%% Demodulate
+%% Demodualte
 dChirpsDemod  = loramod(0,SF,BW,Fs,-1);
 len=length(dChirpsDemod);
 result=signal(shift+1:shift+len).*dChirpsDemod;
-fft_signal = (fft(result));% take fft window
-received_fft=abs(fft_signal);
+fft_signal = (fft(result));% take  fft window
+recieved_fft=abs(fft_signal);
 end
-
 function [y] = loramod(x,SF,BW,Fs,varargin)
 % loramod LoRa modulates a symbol vector specified by x
 %

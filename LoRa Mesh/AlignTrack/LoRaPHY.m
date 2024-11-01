@@ -294,7 +294,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             end
         end
 
-        function [received_fft] = LoRa_demod_1(self,shift)
+        function [received_fft] = LoRa_demod_1(self,received_signal,shift)
             % LoRa_Demodulate_Full demodulates full LoRa packet
 
             %% Return if SF is not in the range
@@ -304,7 +304,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             %% Demodulate
             dChirpsDemod  = self.loramod(0,self.sf,self.bw,self.fs,-1);
             len=length(dChirpsDemod);
-            result=self.sig(shift+1:shift+len).*dChirpsDemod;
+            result=received_signal(shift+1:shift+len).*dChirpsDemod;
             fft_signal = (fft(result));% take fft window
             received_fft=abs(fft_signal);
         end
@@ -341,9 +341,9 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             end
             Inv = 0;
             % Polarity of Chirp
-            if nargin == 4
+            if nargin == 5
                 Inv = 1 ;
-            elseif nargin == 5
+            elseif nargin == 6
                 Inv = varargin{1} ;
             end
             % Symbol Constants

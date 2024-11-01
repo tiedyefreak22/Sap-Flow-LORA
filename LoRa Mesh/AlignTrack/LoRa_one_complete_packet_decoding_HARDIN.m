@@ -115,22 +115,28 @@ while true
         %% AlignTrack Implementation
         figure(2)
         spectrogram(received_signal,1000,0,1000,Fs,'yaxis','centered')
-        [symbols_d, cfo] = phy.demodulate(received_signal);
-        [received_fft] = fft(symbols_d);
+        % [symbols_d, cfo] = phy.demodulate(received_signal);
+        % [received_fft] = fft(symbols_d);
+        % new_received_fft=received_fft;
+        % 
+        % % peak extraction algorithm with AlignTrack decoding for complete packet
+        % [m n]=size(received_fft);
+        % 
+        % % Message is unable to be decoded i.e. size(received_fft) == 0, try
+        % % AlignTrack deconfliction
+        % if m == 0 || n == 0
+        %     fprintf("Deconfliction Necessary\n")
+        %     received_fft(:,1) = phy.LoRa_demod_1(0);
+        %     received_fft(:,2) = phy.LoRa_demod_1(payload_offset);
+        %     new_received_fft=received_fft;
+        %     [m n]=size(received_fft);
+        % end
+
+        fprintf("Deconfliction Necessary\n")
+        received_fft(:,1) = phy.LoRa_demod_1(received_signal, 0);
+        received_fft(:,2) = phy.LoRa_demod_1(received_signal, payload_offset);
         new_received_fft=received_fft;
-
-        % peak extraction algorithm with AlignTrack decoding for complete packet
-        [m n]=size(received_fft);
-
-        % Message is unable to be decoded i.e. size(received_fft) == 0, try
-        % AlignTrack deconfliction
-        if m == 0 || n == 0
-            fprintf("Deconfliction Necessary\n")
-            [received_fft] = phy.LoRa_demod_1(payload_offset);
-            new_received_fft=received_fft;
-            [m n]=size(received_fft);
-        end
-
+        [m n]=size(new_received_fft);
         for j1=0:1:m-1
             for i1=1:1:n
                 [val(j1+1),idx(j1+1)]=max(new_received_fft(j1+1,:));
