@@ -3,27 +3,30 @@ close all;
 clc;
 
 SDR = 0;
-AlignTrack = 0;
+AlignTrack = 1;
+collision = 1;
 
 % LoRa Parameters
 SF = 8; % Spreading factor
 M=2^SF; % no. of samples in one symbol
 BW = 125e3 ; % Bandwidth
 Fs = 1e6;  % sampling freq
-fc = 915e6 ;  % carrier center frequency
-noise_sigma=1;
-message = "Hello world!" ;
+fc = 915e6;  % carrier center frequency
+noise_sigma=0;
+message = "Hello world!";
+message2 = "Hello AlignTrack!";
 numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 symbolRate = BW / (2^SF); % Symbol rate
 shift = 0;
+payload_offset = 5000;
 
 if SDR == 1
     % RTL-SDR Setup
     radio = comm.SDRRTLReceiver('CenterFrequency', fc, ...
-                                'SampleRate', Fs, ...
-                                'EnableTunerAGC', true, ...
-                                'OutputDataType', 'double', ...
-                                'SamplesPerFrame', 370000);
+        'SampleRate', Fs, ...
+        'EnableTunerAGC', true, ...
+        'OutputDataType', 'double', ...
+        'SamplesPerFrame', 370000);
 end
 
 % LoRa Setup
@@ -38,39 +41,96 @@ while true
         % Receive and process signal
         fprintf('Receiving LoRa signal...\n');
         rxSig = step(radio); % Receive RF signal from RTL-SDR
-        
-        % % Downsample to LoRa bandwidth
-        % downsampledSig = filter(lpf, rxSig); % Low-pass filter
-        % downsampleFactor = Fs / BW; % Compute downsample factor
-        % received_signal = downsample(downsampledSig, downsampleFactor);
         received_signal = rxSig;
-    
     else
-        % Encode payload
-        fprintf("[encode] message:\n");
-        disp(double(char(message)).')
-        symbols = phy.encode(double(char(message)).');
-        fprintf("[encode] symbols:\n");
-        disp(symbols);
-        
-        % Baseband Modulation
-        signalIQ1 = phy.modulate(symbols);
-        figure(1)
-        spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
-        noise=noise_sigma*randn(length(signalIQ1),1);
-        received_signal=signalIQ1+noise;
+        if collision == 1
+            % Encode payload
+            fprintf("[encode] message:\n");
+            disp(double(char(message)).')
+            symbols = phy.encode(double(char(message)).');
+            fprintf("[encode] symbols:\n");
+            disp(symbols);
+
+            % Encode payload2
+            fprintf("[encode] message2:\n");
+            disp(double(char(message2)).')
+            symbols2 = phy.encode(double(char(message2)).');
+            fprintf("[encode] symbols2:\n");
+            disp(symbols2);
+
+            if find([size(symbols), size(symbols2)]==max(max([size(symbols), size(symbols2)]))) == 1
+                % Baseband Modulation
+                signalIQ1 = [phy.modulate(symbols); zeros(payload_offset, 1)];
+
+                % Baseband Modulation2
+                signalIQ2 = [zeros(numel(signalIQ1) - numel(phy.modulate(symbols2)), 1); phy.modulate(symbols2)];
+            else
+                % Baseband Modulation2
+                signalIQ2 = [zeros(payload_offset, 1); phy.modulate(symbols2)];
+
+                % Baseband Modulation
+                signalIQ1 = [phy.modulate(symbols); zeros(numel(signalIQ2) - numel(phy.modulate(symbols)), 1)];
+            end
+
+            signalIQ3 = signalIQ1 + signalIQ2;
+            figure(1)
+            spectrogram(signalIQ3,1000,0,1000,Fs,'yaxis','centered')
+            noise=noise_sigma*randn(length(signalIQ3),1);
+            received_signal=signalIQ3+noise;
+        else
+            % Encode payload
+            fprintf("[encode] message:\n");
+            disp(double(char(message)).')
+            symbols = phy.encode(double(char(message)).');
+            fprintf("[encode] symbols:\n");
+            disp(symbols);
+
+            % Baseband Modulation
+            signalIQ1 = phy.modulate(symbols);
+            figure(1)
+            spectrogram(signalIQ1,1000,0,1000,Fs,'yaxis','centered')
+            noise=noise_sigma*randn(length(signalIQ1),1);
+            received_signal=signalIQ1+noise;
+        end
     end
-    
+
     if AlignTrack == 0
-        [received_fft] = fft(received_signal);
-        new_received_fft=received_fft;
+        new_received_signal = received_signal;
+        figure(2)
+        spectrogram(new_received_signal,1000,0,1000,Fs,'yaxis','centered')
+
+        % Demodulation
+        length(new_received_signal)
+        [symbols_d, cfo] = phy.demodulate(new_received_signal);
+        fprintf("[demodulate] symbols:\n");
+        disp(symbols_d);
+
+        % Decoding
+        [data, checksum] = phy.decode(symbols_d);
+        fprintf("[decode] data:\n");
+        disp(data(1:end-2));
+        fprintf("[decode] checksum:\n");
+        disp(checksum);
     else
         %% AlignTrack Implementation
-        [received_fft] = LoRa_demod_1(received_signal,SF,BW,Fs,shift); % changed this line from "LoRa_demod_1_new" to "LoRa_demod_1"
+        figure(2)
+        spectrogram(received_signal,1000,0,1000,Fs,'yaxis','centered')
+        [symbols_d, cfo] = phy.demodulate(received_signal);
+        [received_fft] = fft(symbols_d);
         new_received_fft=received_fft;
-        
+
         % peak extraction algorithm with AlignTrack decoding for complete packet
         [m n]=size(received_fft);
+
+        % Message is unable to be decoded i.e. size(received_fft) == 0, try
+        % AlignTrack deconfliction
+        if m == 0 || n == 0
+            fprintf("Deconfliction Necessary\n")
+            [received_fft] = phy.LoRa_demod_1(payload_offset);
+            new_received_fft=received_fft;
+            [m n]=size(received_fft);
+        end
+
         for j1=0:1:m-1
             for i1=1:1:n
                 [val(j1+1),idx(j1+1)]=max(new_received_fft(j1+1,:));
@@ -154,22 +214,18 @@ while true
             end
             AA=AA(issidelobe~=1);
         end
+        plot(received_fft)
+        symbols_d = ifft(received_fft(:,1));
+
+        for payload_num=1:1:size(received_fft,2)
+            symbols_d = ifft(received_fft(:,payload_num));
+
+            % Decoding
+            [data, checksum] = phy.decode(symbols_d);
+            fprintf("[decode] data:\n");
+            disp(data(1:end-2));
+            fprintf("[decode] checksum:\n");
+            disp(checksum);
+        end
     end
-    
-    new_received_signal = ifft(new_received_fft(:,1));
-    figure(2)
-    spectrogram(new_received_signal,1000,0,1000,Fs,'yaxis','centered')
-    
-    % Demodulation
-    length(new_received_signal)
-    [symbols_d, cfo] = phy.demodulate(new_received_signal);
-    fprintf("[demodulate] symbols:\n");
-    disp(symbols_d);
-    
-    % Decoding
-    [data, checksum] = phy.decode(symbols_d);
-    fprintf("[decode] data:\n");
-    disp(data);
-    fprintf("[decode] checksum:\n");
-    disp(checksum);
 end

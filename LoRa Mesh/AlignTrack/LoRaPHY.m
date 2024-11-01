@@ -98,7 +98,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
                 0 1 0 0 1 0 0 1 1 0 1 0
                 0 0 1 0 0 1 0 1 0 1 1 1
                 0 0 0 1 0 0 1 0 1 1 1 1
-            ]);
+                ]);
 
             self.crc_generator = comm.CRCGenerator('Polynomial','X^16 + X^12 + X^5 + 1');
 
@@ -146,6 +146,24 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             ft = fft(self.sig(x:x+self.sample_num-1).*c, self.fft_len);
             ft_ = abs(ft(1:self.bin_num)) + abs(ft(self.fft_len-self.bin_num+1:self.fft_len));
             pk = LoRaPHY.topn([ft_ (1:self.bin_num).'], 1);
+        end
+
+        function ft = dechirp_fft(self, is_up)
+            % dechirp  Apply dechirping on the symbol starts from index 1
+            %
+            % input:
+            %     x: Start index of a symbol
+            %     is_up: `true` if applying up-chirp dechirping
+            %            `false` if applying down-chirp dechirping
+            % output:
+            %     pk: fft results
+
+            if ~is_up
+                c = self.upchirp;
+            else
+                c = self.downchirp;
+            end
+            ft = fft(self.sig(1:1+self.sample_num-1).*c, self.fft_len);
         end
 
         function x = detect(self, start_idx)
@@ -228,7 +246,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
                 netid_m = [netid_m;
                     [mod((pk_netid1(2)+self.bin_num-self.preamble_bin)/self.zero_padding_ratio, 2^self.sf), ...
                     mod((pk_netid2(2)+self.bin_num-self.preamble_bin)/self.zero_padding_ratio, 2^self.sf)]
-                ];
+                    ];
 
                 % the goal is to extract payload_len from PHY header
                 % header is in the first 8 symbols
@@ -274,6 +292,69 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             if isempty(symbols_m)
                 warning('No preamble detected!');
             end
+        end
+
+        function [received_fft] = LoRa_demod_1(self,shift)
+            % LoRa_Demodulate_Full demodulates full LoRa packet
+
+            %% Return if SF is not in the range
+            if self.sf > 12 || self.sf < 7
+                return
+            end
+            %% Demodulate
+            dChirpsDemod  = self.loramod(0,self.sf,self.bw,self.fs,-1);
+            len=length(dChirpsDemod);
+            result=self.sig(shift+1:shift+len).*dChirpsDemod;
+            fft_signal = (fft(result));% take fft window
+            received_fft=abs(fft_signal);
+        end
+
+        function [y] = loramod(self,x,SF,BW,Fs,varargin)
+            % loramod LoRa modulates a symbol vector specified by x
+            %
+            %   in:  x          1xN symbol vector
+            %                   with values {0,1,2,...,2^(SF)-1}
+            %        BW         signal bandwidth of LoRa transmisson
+            %        SF         spreading factor
+            %        Fs         sampling frequency
+            %        varargin{1} set polarity of chirp
+            %
+            %  out:  y          LoRa IQ waveform
+            if (nargin < 5)
+                error(message('comm:pskmod:numarg1'));
+            end
+            if (nargin > 6)
+                error(message('comm:pskmod:numarg2'));
+            end
+            % Check that x is a positive integer
+            if (~isreal(x) || any(any(ceil(x) ~= x)) || ~isnumeric(x))
+                error(message('comm:pskmod:xreal1'));
+            end
+            M       = 2^SF ;
+            % Check that M is a positive integer
+            if (~isreal(M) || ~isscalar(M) || M<=0 || (ceil(M)~=M) || ~isnumeric(M))
+                error(message('comm:pskmod:Mreal'));
+            end
+            % Check that x is within range
+            if ((min(min(x)) < 0) || (max(max(x)) > (M-1)))
+                error(message('comm:pskmod:xreal2'));
+            end
+            Inv = 0;
+            % Polarity of Chirp
+            if nargin == 4
+                Inv = 1 ;
+            elseif nargin == 5
+                Inv = varargin{1} ;
+            end
+            % Symbol Constants
+            Ts      = 2^SF/BW ;
+            Ns      = Fs.*M/BW ;
+            gamma   = x/Ts ;
+            beta    = BW/Ts ;
+            time    = (0:Ns-1)'.*1/Fs ;
+            freq    = mod(gamma + beta.*time,BW) ;
+            Theta   = cumtrapz(time,Inv.*freq) ;
+            y       = reshape(exp(j.*2.*pi.*Theta),numel(Theta),1) ;
         end
 
         function is_valid = parse_header(self, data)
@@ -1055,22 +1136,22 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
 
             m = nargchk (1,2,nargin);
             if (m)
-            usage (m);
+                usage (m);
             end
 
             if (nargin < 2)
-            count = Inf;
+                count = Inf;
             end
 
             f = fopen (filename, 'rb');
             if (f < 0)
-            v = 0;
+                v = 0;
             else
-            t = fread (f, [2, count], 'float');
-            fclose (f);
-            v = t(1,:) + t(2,:)*1i;
-            [r, c] = size (v);
-            v = reshape (v, c, r);
+                t = fread (f, [2, count], 'float');
+                fclose (f);
+                v = t(1,:) + t(2,:)*1i;
+                [r, c] = size (v);
+                v = reshape (v, c, r);
             end
         end
 
@@ -1086,21 +1167,21 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
 
             m = nargchk (2,2,nargin);
             if (m)
-            usage (m);
+                usage (m);
             end
 
             f = fopen (filename, 'wb');
             if (f < 0)
-            v = 0;
+                v = 0;
             else
-            re = real(data);
-            im = imag(data);
-            re = re(:)';
-            im = im(:)';
-            y = [re;im];
-            y = y(:);
-            v = fwrite (f, y, 'float');
-            fclose (f);
+                re = real(data);
+                im = imag(data);
+                re = re(:)';
+                im = im(:)';
+                y = [re;im];
+                y = y(:);
+                v = fwrite (f, y, 'float');
+                fclose (f);
             end
         end
     end
