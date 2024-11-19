@@ -1,65 +1,34 @@
-function [recieved_fft] = LoRa_demod_1(signal,SF,BW,Fs,shift)
-% LoRa_Demodulate_Full demodulates full LoRa packet
+function [recieved_fft] = LoRa_demod_1(signal, SF, BW, Fs, shift)
+    % LoRa_Demodulate_Full demodulates full LoRa packet
+    
+    %% Return if SF is not in the range
+    if SF > 12 || SF < 7
+        return
+    end
+    %% Demodualte
+    fc = 915e6;  % carrier center frequency
+    cfo = 0;
+    numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 
-%% Return if SF is not in the range
-if SF > 12 || SF < 7
-    return
-end
-%% Demodualte
-dChirpsDemod  = loramod(0,SF,BW,Fs,-1);
-len=length(dChirpsDemod);
+    phy = LoRaPHY(fc, SF, BW, Fs);
+    % phy.has_header = 1;                         % explicit header mode
+    % phy.cr = 1;                                 % code rate = 4/8 (1:4/5 2:4/6 3:4/7 4:4/8)
+    % phy.crc = 1;                                % enable payload CRC checksum
+    % phy.preamble_len = numPreambleSymbols;      % preamble: 8 basic upchirps
 
-%result=signal(shift+1:shift+len).*dChirpsDemod;
-result=convolve_with_window(signal(shift+1:shift+len), 'rectangular').*dChirpsDemod;
+    dChirpsDemod  = phy.chirp(false, SF, BW, 2*BW, 0, cfo, 0);
+    len=length(dChirpsDemod);
+    
+    %result=signal(shift+1:shift+len).*dChirpsDemod;
+    result=convolve_with_window(signal(shift + 1:shift + len), 'rectangular').*dChirpsDemod;
+    
+    NFFT = 2^nextpow2(length(signal));
+    Y = abs(fft(result, NFFT)) / length(signal);
+    f = Fs/2*linspace(0, 1, NFFT / 2+1);
+    plot(f, 2*abs(Y(1:NFFT / 2 + 1)))
 
-fft_signal = (fft(result));% take  fft window
-recieved_fft=abs(fft_signal);
-end
-function [y] = loramod(x,SF,BW,Fs,varargin)
-% loramod LoRa modulates a symbol vector specified by x
-%
-%   in:  x          1xN symbol vector
-%                   with values {0,1,2,...,2^(SF)-1}
-%        BW         signal bandwidth of LoRa transmisson
-%        SF         spreading factor
-%        Fs         sampling frequency
-%        varargin{1} set polarity of chirp
-%
-%  out:  y          LoRa IQ waveform
-if (nargin < 4)
-    error(message('comm:pskmod:numarg1'));
-end
-if (nargin > 5)
-    error(message('comm:pskmod:numarg2'));
-end
-% Check that x is a positive integer
-if (~isreal(x) || any(any(ceil(x) ~= x)) || ~isnumeric(x))
-    error(message('comm:pskmod:xreal1'));
-end
-M       = 2^SF ;
-% Check that M is a positive integer
-if (~isreal(M) || ~isscalar(M) || M<=0 || (ceil(M)~=M) || ~isnumeric(M))
-    error(message('comm:pskmod:Mreal'));
-end
-% Check that x is within range
-if ((min(min(x)) < 0) || (max(max(x)) > (M-1)))
-    error(message('comm:pskmod:xreal2'));
-end
-% Polarity of Chirp
-if nargin == 4
-    Inv = 1 ;
-elseif nargin == 5
-    Inv = varargin{1} ;
-end
-% Symbol Constants
-Ts      = 2^SF/BW ;
-Ns      = Fs.*M/BW ;
-gamma   = x/Ts ;
-beta    = BW/Ts ;
-time    = (0:Ns-1)'.*1/Fs ;
-freq    = mod(gamma + beta.*time,BW) ;
-Theta   = cumtrapz(time,Inv.*freq) ;
-y       = reshape(exp(j.*2.*pi.*Theta),numel(Theta),1) ;
+    fft_signal = (fft(result)); % take fft window
+    recieved_fft=abs(fft_signal);
 end
 
 % Helper function to convolve with a specified window

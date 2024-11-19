@@ -14,8 +14,8 @@ numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 % message2 = "Hello AlignTrack!";
 % message3 = "Hello Goodbye!";
 message1 = "1";
-message2 = "2";
-message3 = "3";
+message2 = "12";
+message3 = "123";
 Fc = 921.5e6; % spectrum center frequency
 df = Fc - fc;   % if CFO exists
 shift = 0;
@@ -51,21 +51,25 @@ fprintf("[encode] symbols 3:\n");
 disp(symbols3);
 
 % Baseband Modulation
-switch find([numel(symbols1), numel(symbols2), numel(symbols3)] == max(max([numel(symbols1), numel(symbols2), numel(symbols3)])), 1, 'first')
-    case 1
-        signalIQ1 = zeros(numel(phy.modulate(symbols1)) + payload_offset1 + payload_offset2, 1);
-        signalIQ2 = signalIQ1;
-        signalIQ3 = signalIQ1;
-    case 2
-        signalIQ1 = zeros(numel(phy.modulate(symbols2)) + payload_offset1 + payload_offset2, 1);
-        signalIQ2 = signalIQ1;
-        signalIQ3 = signalIQ1;
-    case 3
-        signalIQ1 = zeros(numel(phy.modulate(symbols3)) + payload_offset1 + payload_offset2, 1);
-        signalIQ2 = signalIQ1;
-        signalIQ3 = signalIQ1;
-    otherwise
-        error("Can't determine max signal length");
+if isscalar(find([numel(symbols1), numel(symbols2), numel(symbols3)] == max(max([numel(symbols1), numel(symbols2), numel(symbols3)]))))
+    switch find([numel(symbols1), numel(symbols2), numel(symbols3)] == max(max([numel(symbols1), numel(symbols2), numel(symbols3)])), 'fir')
+        case 1
+            signalIQ1 = zeros(numel(phy.modulate(symbols1)) + payload_offset1 + payload_offset2, 1);
+            signalIQ2 = signalIQ1;
+            signalIQ3 = signalIQ1;
+        case 2
+            signalIQ1 = zeros(numel(phy.modulate(symbols2)) + payload_offset1 + payload_offset2, 1);
+            signalIQ2 = signalIQ1;
+            signalIQ3 = signalIQ1;
+        case 3
+            signalIQ1 = zeros(numel(phy.modulate(symbols3)) + payload_offset1 + payload_offset2, 1);
+            signalIQ2 = signalIQ1;
+            signalIQ3 = signalIQ1;
+        otherwise
+            error("Can't determine max signal length");
+    end
+else
+    error("Multiple signals with max value")
 end
 
 signalIQ1(1:numel(phy.modulate(symbols1))) = phy.modulate(symbols1);
@@ -81,16 +85,21 @@ spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
 noise = noise_sigma * randn(length(signalIQtotal), 1);
 
 % signal recieved at  LoRa gateway
-%recieved_signal = signalIQtotal + noise;
-recieved_signal = signalIQtotal;
+recieved_signal = signalIQtotal + noise;
+% recieved_signal = signalIQtotal;
 
 % recieved signal after windowing and FFT
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, 0);
-new_recieved_fft(1, :) = recieved_fft.';
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset1);
-new_recieved_fft(2, :) = recieved_fft.';
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset2);
-new_recieved_fft(3, :) = recieved_fft.';
+% [recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, 0);
+% new_recieved_fft(1, :) = recieved_fft.';
+% [recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset1);
+% new_recieved_fft(2, :) = recieved_fft.';
+% [recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset2);
+% new_recieved_fft(3, :) = recieved_fft.';
+
+for fft_sam_idx = 0:1:length(recieved_signal) - 1
+    [recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, fft_sam_idx);
+    new_recieved_fft(fft_sam_idx + 1, :) = recieved_fft.';
+end
 
 % peak extraction algorith with align track decoding for complete packet
 [row_fft, col_fft] = size(new_recieved_fft);
