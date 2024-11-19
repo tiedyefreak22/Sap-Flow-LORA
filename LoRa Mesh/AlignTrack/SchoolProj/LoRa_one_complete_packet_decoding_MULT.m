@@ -6,21 +6,22 @@ M = 2^SF; % no. of samples in one symbol
 BW = 125e3; % Bandwidth
 Fs = 10e6;  % sampling freq
 Ts = 2^SF / BW;   % Symbol period
+k = BW / Ts;
 fc = 915e6;  % carrier center frequency
 Power = 14;  % Tx power 14 dB
 noise_sigma = 1;
 numPreambleSymbols = 8; % Standard LoRa preamble symbol count
-% message1 = "Hello World!";
-% message2 = "Hello AlignTrack!";
-% message3 = "Hello Goodbye!";
-message1 = "1";
-message2 = "2";
-message3 = "3";
+message1 = "Hello World!";
+message2 = "Hello AlignTrack!";
+message3 = "Hello Goodbye!";
+% message1 = "1";
+% message2 = "2";
+% message3 = "3";
 Fc = 921.5e6; % spectrum center frequency
 df = Fc - fc;   % if CFO exists
 shift = 0;
-payload_offset1 = 25255;
-payload_offset2 = 45255; % offset from second signal, not first
+payload_offset1 = randi([0,50000]);
+payload_offset2 = randi([0,50000]); % offset from second signal, not first
 
 phy = LoRaPHY(fc, SF, BW, Fs);
 phy.has_header = 1;                         % explicit header mode
@@ -73,32 +74,35 @@ signalIQ2(payload_offset1 + 1:numel(phy.modulate(symbols2)) + payload_offset1) =
 signalIQ3(payload_offset1 + payload_offset2 + 1:numel(phy.modulate(symbols3)) + payload_offset1 + payload_offset2) = phy.modulate(symbols3);
 signalIQtotal = signalIQ1 + signalIQ2 + signalIQ3;
 
+% Add zero leader
+signalIQtotal = [zeros(randi([0,10000]), 1); signalIQtotal];
+
 % spectrogram for one LoRa packet
-figure(1)
+figure
 spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
 
-% %AWGN noise
+% AWGN noise
 noise = noise_sigma * randn(length(signalIQtotal), 1);
 
 % signal recieved at  LoRa gateway
-%recieved_signal = signalIQtotal + noise;
-recieved_signal = signalIQtotal;
+received_signal = signalIQtotal + noise;
+%received_signal = signalIQtotal;
 
-% recieved signal after windowing and FFT
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, 0);
-new_recieved_fft(1, :) = recieved_fft.';
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset1);
-new_recieved_fft(2, :) = recieved_fft.';
-[recieved_fft] = LoRa_demod_1(recieved_signal, SF, BW, Fs, payload_offset2);
-new_recieved_fft(3, :) = recieved_fft.';
+% received signal after windowing and FFT
+[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, 0);
+new_received_fft(1, :) = received_fft.';
+[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1);
+new_received_fft(2, :) = received_fft.';
+[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset2);
+new_received_fft(3, :) = received_fft.';
 
 % peak extraction algorith with align track decoding for complete packet
-[row_fft, col_fft] = size(new_recieved_fft);
+[row_fft, col_fft] = size(new_received_fft);
 k = 6;
 for fft_row_idx = 0:1:row_fft - 1
     for fft_col_idx = 1:1:col_fft
-        [val(fft_row_idx + 1), idx(fft_row_idx + 1)] = max(new_recieved_fft(fft_row_idx + 1, :));
-        r(fft_row_idx + 1) = mean(new_recieved_fft(fft_row_idx + 1, :)) + k * std(new_recieved_fft(fft_row_idx + 1, :));
+        [val(fft_row_idx + 1), idx(fft_row_idx + 1)] = max(new_received_fft(fft_row_idx + 1, :));
+        r(fft_row_idx + 1) = mean(new_received_fft(fft_row_idx + 1, :)) + k * std(new_received_fft(fft_row_idx + 1, :));
         if val(fft_row_idx + 1) >= r(fft_row_idx + 1) % test against dynamic peak extraction threshold
             I(fft_row_idx + 1, fft_col_idx) = idx(fft_row_idx + 1);
             before = (idx(fft_row_idx + 1) - 1);
@@ -112,7 +116,7 @@ for fft_row_idx = 0:1:row_fft - 1
                 if before-1 <= 0
                     before = idx(fft_row_idx + 1) + 1;
                 end
-                if recieved_fft(before + 1) > recieved_fft(before) && recieved_fft(before) < recieved_fft(before - 1)
+                if received_fft(before + 1) > received_fft(before) && received_fft(before) < received_fft(before - 1)
                     b = before;
                     before = before-1;
                     break;
@@ -130,7 +134,7 @@ for fft_row_idx = 0:1:row_fft - 1
                 if after + 1 >= col_fft
                     after = idx(fft_row_idx + 1) - 1;
                 end
-                if recieved_fft(after)<recieved_fft(after - 1) && recieved_fft(after + 1) > recieved_fft(after)
+                if received_fft(after)<received_fft(after - 1) && received_fft(after + 1) > received_fft(after)
                     a = after;
                     after = after + 1;
                     break;
@@ -141,7 +145,7 @@ for fft_row_idx = 0:1:row_fft - 1
             end
             %  remove local min points before and after index value
             for y = before:after
-                new_recieved_fft(fft_row_idx + 1, y) = 0;
+                new_received_fft(fft_row_idx + 1, y) = 0;
             end
         else
             break;
@@ -168,14 +172,13 @@ for ee = 1:1:m1
         for j = i + 1:1:length(AA)
             for k = 1:1:length(AA)
                 if AA(j) - AA(i) == AA(i) - AA(k)
-                    if k ~= j && recieved_fft(AA(k)) == recieved_fft(AA(j))
+                    if k ~= j && received_fft(AA(k)) == received_fft(AA(j))
                         issidelobe(k) = 1;
                         issidelobe(j) = 1;
                     end
                 end
             end
         end
-        i
     end
     AA = AA(issidelobe ~= 1);
 end
