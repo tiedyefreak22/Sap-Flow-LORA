@@ -1,4 +1,4 @@
-function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
+function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo, window)
     % LoRa_demod_1 demodulates full LoRa packet
 
     % Inputs:
@@ -28,8 +28,8 @@ function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
     while (shift + chirp_len) < length(signal)
         % Step 3: Extract Windows, Dechirp, and Compute FFT
         %result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
-        %result = convolve_with_window(signal(shift + 1:shift + chirp_len), 'hamming') .* dChirpsDemod;
-        result = multiply_with_window(signal(shift + 1:shift + chirp_len), 'rectangular') .* dChirpsDemod;
+        %result = convolve_with_window(signal(shift + 1:shift + chirp_len), window) .* dChirpsDemod;
+        result = multiply_with_window(signal(shift + 1:shift + chirp_len), window) .* dChirpsDemod;
 
         NFFT = 2^nextpow2(length(result));
         Y = abs(fft(result, NFFT)) / length(result);
@@ -41,10 +41,10 @@ function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
         f1 = f(IX(end)); %frequency of first peak
         f2 = f(IX(end - 1)); %frequency of second peak
 
-        if f1 == 0
-            figure
-            plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
-            xlim([0 200000])
+        if (f1 == 0) && (A1 > 0.5)
+            %figure
+            %plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
+            %xlim([0 200000])
 
             % Step 3.2: Apply FFT to dechirped signal
             received_fft(i, :) = Y;
