@@ -12,15 +12,16 @@ function [received_fft] = LoRa_demod_1(signal, SF, BW, Fs, shift)
     dChirpsDemod  = phy.chirp(false, SF, BW, Fs, 0, cfo, 0);
     len = length(dChirpsDemod);
     
-    %result = signal(shift + 1:shift + len) .* dChirpsDemod;
-    result = convolve_with_window(signal(shift + 1:shift + len), 'rectangular') .* dChirpsDemod;
+    result = signal(shift + 1:shift + len) .* dChirpsDemod;
+    %result = convolve_with_window(signal(shift + 1:shift + len), 'hamming') .* dChirpsDemod;
 
     figure
-    fft_signal = (fft(result)); % take fft window
-    f = Fs / 2 * linspace(0, 1, length(fft_signal) / 2 + 1);
-    plot(f, 2 * abs(fft_signal(1:length(fft_signal) / 2 + 1)))
-    xlim([0 100000])
-    received_fft = abs(fft_signal);
+    NFFT = 2^nextpow2(length(result));
+    Y = abs(fft(result, NFFT)) / length(result);
+    f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
+    plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
+    xlim([0 200000])
+    received_fft = Y;
 end
 
 % Helper function to convolve with a specified window
