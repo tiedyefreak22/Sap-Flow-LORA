@@ -27,14 +27,16 @@ function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
 
     while (shift + chirp_len) < length(signal)
         % Step 3: Extract Windows, Dechirp, and Compute FFT
-        result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
-        %result = convolve_with_window(signal(shift + 1:shift + len), 'hamming') .* dChirpsDemod;
+        %result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
+        %result = convolve_with_window(signal(shift + 1:shift + chirp_len), 'hamming') .* dChirpsDemod;
+        result = multiply_with_window(signal(shift + 1:shift + chirp_len), 'rectangular') .* dChirpsDemod;
 
         NFFT = 2^nextpow2(length(result));
         Y = abs(fft(result, NFFT)) / length(result);
         f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
 
         [B, IX] = sort(2 * abs(Y(1:NFFT / 2 + 1))); %order the amplitudes
+        A1 = B(end); %amplitude of second peak
         A2 = B(end - 1); %amplitude of second peak
         f1 = f(IX(end)); %frequency of first peak
         f2 = f(IX(end - 1)); %frequency of second peak
@@ -83,4 +85,35 @@ function output_signal = convolve_with_window(input_signal, window_type)
     
     % Convolve the input signal with the window
     output_signal = conv(input_signal, window, 'same'); % 'same' to keep the output size same as input, 'full' to show full output
+end
+
+% Helper function to multiply with a specified window
+function output_signal = multiply_with_window(input_signal, window_type)
+    % Define the window size based on the input signal length
+    window_length = length(input_signal);
+    
+    % Generate the window based on the specified type
+    switch window_type
+        case 'rectangular'
+            window = ones(1, window_length);
+        case 'linear_increasing'
+            window = linspace(0, 1, window_length);
+        case 'linear_decreasing'
+            window = linspace(1, 0, window_length);
+        case 'triangular'
+            window = 1 - abs(linspace(-1, 1, window_length));
+        case 'welch'
+            window = 1 - ((linspace(-1, 1, window_length)).^2);
+        case 'sine'
+            window = sin(pi * (linspace(0, 1, window_length) - 0.5));
+        case 'hann'
+            window = 0.5 * (1 - cos(2 * pi * (0:window_length - 1) / (window_length - 1)));
+        case 'hamming'
+            window = 0.54 - 0.46 * cos(2 * pi * (0:window_length - 1) / (window_length - 1));
+        otherwise
+            error('Unknown window type: %s', window_type);
+    end
+    
+    % Multiply the input signal with the window
+    output_signal = input_signal .* window.';
 end

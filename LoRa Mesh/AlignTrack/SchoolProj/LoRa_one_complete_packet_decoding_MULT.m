@@ -92,7 +92,6 @@ received_signal = signalIQtotal + noise;
 
 % received signal after windowing and FFT
 [received_fft] = LoRa_demod_1(received_signal, fc, SF, BW, Fs, cfo);
-size(received_fft)
 for i = 1:1:size(received_fft, 1)
     new_received_fft(i, :) = received_fft(i, :).';
 end
