@@ -92,12 +92,10 @@ received_signal = signalIQtotal + noise;
 
 % received signal after windowing and FFT
 [received_fft] = LoRa_demod_1(received_signal, fc, SF, BW, Fs, cfo);
-new_received_fft = received_fft;
-% new_received_fft(1, :) = received_fft.';
-% [received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + initial_offset);
-% new_received_fft(2, :) = received_fft.';
-% [received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + payload_offset2 + initial_offset);
-% new_received_fft(3, :) = received_fft.';
+size(received_fft)
+for i = 1:1:size(received_fft, 1)
+    new_received_fft(i, :) = received_fft(i, :).';
+end
 
 % peak extraction algorithm with AlignTrack decoding for complete packet
 [row_fft, col_fft] = size(new_received_fft);
@@ -155,7 +153,7 @@ for fft_row_idx = 0:1:row_fft - 1
         end
     end
 end
-[m1 n1] = size(I);
+[m1, n1] = size(I);
 % sort the index value for further processing
 I = sort(I, 2);
 % side lobe elimination
@@ -168,7 +166,7 @@ for ee = 1:1:m1
             break;
         end
     end
-    A.(sprintf('RandomVariable_%d', ee)) = I(ee, [d1:end]);
+    A.(sprintf('RandomVariable_%d', ee)) = I(ee, d1:end);
     AA = A.(sprintf('RandomVariable_%d', ee));
     issidelobe = zeros(1, length(AA));
     for i = 1:1:length(AA)

@@ -18,25 +18,40 @@ function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
     ref_upchirp = phy.chirp(true, SF, BW, Fs, 0, cfo, 0);
     chirp_len = length(dChirpsDemod);
     k = BW / (chirp_len / Fs); % Chirp rate
-    
+
     % Step 2: Cross-Correlation for Preamble Detection
     correlation = abs(xcorr(signal, ref_upchirp));
     [~, peak_idx] = max(correlation); % Find the peak
     shift = peak_idx - length(signal); % Align index with signal
+    i = 1;
 
-    % Step 3: Extract Windows, Dechirp, and Compute FFT
-    result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
-    %result = convolve_with_window(signal(shift + 1:shift + len), 'hamming') .* dChirpsDemod;
+    while (shift + chirp_len) < length(signal)
+        % Step 3: Extract Windows, Dechirp, and Compute FFT
+        result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
+        %result = convolve_with_window(signal(shift + 1:shift + len), 'hamming') .* dChirpsDemod;
 
-    figure
-    NFFT = 2^nextpow2(length(result));
-    Y = abs(fft(result, NFFT)) / length(result);
-    f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
-    plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
-    xlim([0 200000])
+        NFFT = 2^nextpow2(length(result));
+        Y = abs(fft(result, NFFT)) / length(result);
+        f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
 
-    % Step 3.2: Apply FFT to dechirped signal
-    received_fft(1, :) = fft(result);
+        [B, IX] = sort(2 * abs(Y(1:NFFT / 2 + 1))); %order the amplitudes
+        A2 = B(end - 1); %amplitude of second peak
+        f1 = f(IX(end)); %frequency of first peak
+        f2 = f(IX(end - 1)); %frequency of second peak
+
+        if f1 == 0
+            figure
+            plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
+            xlim([0 200000])
+
+            % Step 3.2: Apply FFT to dechirped signal
+            received_fft(i, :) = Y;
+            shift = shift + abs(Fs * ((f2 - BW) / k));
+            i = i + 1;
+        else
+            shift = shift + (chirp_len / 2^SF);
+        end
+    end
 end
 
 % Helper function to convolve with a specified window
@@ -69,59 +84,3 @@ function output_signal = convolve_with_window(input_signal, window_type)
     % Convolve the input signal with the window
     output_signal = conv(input_signal, window, 'same'); % 'same' to keep the output size same as input, 'full' to show full output
 end
-
-% function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo)
-%     % LoRa_demod_1 demodulates full LoRa packet
-% 
-%     % Inputs:
-%     % - signal: The received time-domain signal
-%     % - SF: LoRa spreading factor (e.g., 7, 8, 9, etc.)
-%     % - BW: LoRa bandwidth (e.g., 125e3 for 125 kHz)
-%     % - Fs: Sampling frequency of the signal
-% 
-%     %% Return if SF is not in the range
-%     if SF > 12 || SF < 7
-%         return
-%     end
-% 
-%     % Step 1: Generate Reference Upchirp and Downchirp
-%     phy = LoRaPHY(fc, SF, BW, Fs);
-%     dChirpsDemod  = phy.chirp(false, SF, BW, Fs, 0, cfo, 0);
-%     ref_upchirp = phy.chirp(true, SF, BW, Fs, 0, cfo, 0);
-%     chirp_len = length(dChirpsDemod);
-%     k = BW / (chirp_len / Fs); % Chirp rate
-% 
-%     % Step 2: Cross-Correlation for Preamble Detection
-%     correlation = abs(xcorr(signal, ref_upchirp));
-%     [~, peak_idx] = max(correlation); % Find the peak
-%     shift = peak_idx - length(signal); % Align index with signal
-%     i = 1;
-% 
-%     while (shift + chirp_len) < length(signal)
-%         % Step 3: Extract Windows, Dechirp, and Compute FFT
-%         result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
-%         %result = convolve_with_window(signal(shift + 1:shift + len), 'hamming') .* dChirpsDemod;
-% 
-%         NFFT = 2^nextpow2(length(result));
-%         Y = abs(fft(result, NFFT)) / length(result);
-%         f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
-% 
-%         [B, IX] = sort(2 * abs(Y(1:NFFT / 2 + 1))); %order the amplitudes
-%         A2 = B(end - 1); %amplitude of second peak
-%         f1 = f(IX(end)); %frequency of first peak
-%         f2 = f(IX(end - 1)); %frequency of second peak
-% 
-%         if f1 == 0
-%             figure
-%             plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
-%             xlim([0 200000])
-% 
-%             % Step 3.2: Apply FFT to dechirped signal
-%             received_fft(i, :) = fft(result, NFFT);
-%             shift = shift + abs(Fs * ((f2 - BW) / k));
-%             i = i + 1;
-%         else
-%             shift = shift + (chirp_len / 2^SF);
-%         end
-%     end
-% end
