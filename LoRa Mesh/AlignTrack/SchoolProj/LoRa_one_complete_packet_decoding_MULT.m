@@ -13,14 +13,12 @@ numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 message1 = "Hello World!";
 message2 = "Hello AlignTrack!";
 message3 = "Hello Goodbye!";
-% message1 = "1";
-% message2 = "2";
-% message3 = "3";
 Fc = 921.5e6; % spectrum center frequency
+cfo = 0;
 df = Fc - fc;   % if CFO exists
 offset_time = 80; % ms
-payload_offset1 = Fs * (randi([1, offset_time]) / 1000); % samples
-payload_offset2 = Fs * (randi([1, offset_time]) / 1000); % offset from second signal, not first
+payload_offset1 = round(Fs * (randi([1, offset_time]) / 1000)); % samples
+payload_offset2 = round(Fs * (randi([1, offset_time]) / 1000)); % offset from second signal, not first
 
 phy = LoRaPHY(fc, SF, BW, Fs);
 phy.has_header = 1;                         % explicit header mode
@@ -59,14 +57,14 @@ switch find([numel(symbols1), numel(symbols2), numel(symbols3)] == max(max([nume
         signalIQ3 = signalIQ1;
     case 2
         diff = (max(max([numel(symbols1), numel(symbols2), numel(symbols3)])) - min(min([numel(symbols1), numel(symbols2), numel(symbols3)]))) * Ts * Fs;
-        signalIQ1 = zeros(numel(phy.modulate(symbols2)) + payload_offset1 + payload_offset2 - diff, 1);
-        signalIQ2 = signalIQ1;
-        signalIQ3 = signalIQ1;
+        signalIQ2 = zeros(numel(phy.modulate(symbols2)) + payload_offset1 + payload_offset2 - diff, 1);
+        signalIQ1 = signalIQ2;
+        signalIQ3 = signalIQ2;
     case 3
         diff = (max(max([numel(symbols1), numel(symbols2), numel(symbols3)])) - min(min([numel(symbols1), numel(symbols2), numel(symbols3)]))) * Ts * Fs;
-        signalIQ1 = zeros(numel(phy.modulate(symbols3)) + payload_offset1 + payload_offset2 - diff, 1);
-        signalIQ2 = signalIQ1;
-        signalIQ3 = signalIQ1;
+        signalIQ3 = zeros(numel(phy.modulate(symbols3)) + payload_offset1 + payload_offset2 - diff, 1);
+        signalIQ1 = signalIQ3;
+        signalIQ2 = signalIQ3;
     otherwise
         error("Can't determine max signal length");
 end
@@ -77,9 +75,8 @@ signalIQ3(payload_offset1 + payload_offset2 + 1:numel(phy.modulate(symbols3)) + 
 signalIQtotal = signalIQ1 + signalIQ2 + signalIQ3;
 
 % Add zero leader
-% initial_offset = Fs * (randi([1, 10]) / 1000);
-% signalIQtotal = [zeros(initial_offset, 1); signalIQtotal];
-initial_offset = 0;
+initial_offset = Fs * (randi([1, 10]) / 1000);
+signalIQtotal = [zeros(initial_offset, 1); signalIQtotal];
 
 % spectrogram for one LoRa packet
 figure
@@ -94,12 +91,13 @@ received_signal = signalIQtotal + noise;
 %received_signal = signalIQtotal;
 
 % received signal after windowing and FFT
-[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, 0);
-new_received_fft(1, :) = received_fft.';
-[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + initial_offset);
-new_received_fft(2, :) = received_fft.';
-[received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + payload_offset2 + initial_offset);
-new_received_fft(3, :) = received_fft.';
+[received_fft] = LoRa_demod_1(received_signal, fc, SF, BW, Fs, cfo);
+new_received_fft = received_fft;
+% new_received_fft(1, :) = received_fft.';
+% [received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + initial_offset);
+% new_received_fft(2, :) = received_fft.';
+% [received_fft] = LoRa_demod_1(received_signal, SF, BW, Fs, payload_offset1 + payload_offset2 + initial_offset);
+% new_received_fft(3, :) = received_fft.';
 
 % peak extraction algorithm with AlignTrack decoding for complete packet
 [row_fft, col_fft] = size(new_received_fft);
