@@ -207,8 +207,10 @@ windows
 mean(tEnds, 2).'
 
 figure
+hold on
 for i = 1:1:size(tEnds, 1)
     x = 1:1:trials;
     plot(x, tEnds(i, :))
     legend(windows)
 end
+hold off
