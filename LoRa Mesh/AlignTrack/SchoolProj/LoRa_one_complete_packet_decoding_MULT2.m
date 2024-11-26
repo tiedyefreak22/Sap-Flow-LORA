@@ -1,6 +1,7 @@
 clear all;
 close all;
 clc;
+warning('off', 'all');
 
 % =============================================================================================
 % START Parameter Definition
@@ -94,9 +95,9 @@ initial_offset = Fs * (randi([1, 10]) / 1000);
 signalIQtotal = [zeros(initial_offset, 1); signalIQtotal];
 
 % spectrogram for one LoRa packet
-% figure
-% spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
-% ylim([-BW / 2000000, BW / 2000000])
+figure
+spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
+ylim([-BW / 2000000, BW / 2000000])
 
 % AWGN noise
 noise = noise_sigma * randn(length(signalIQtotal), 1);
@@ -128,6 +129,9 @@ decoded_messages = {decoded_message(:, 1).'};
 window = "rectangular";
 tStart = tic;
 
+% Loop over received signal, run through AlignTrack algorithm, then use
+% output to advance to next peak corresponding to next window alignment
+% point
 while (shift(i) + chirp_len - 1) <= length(received_signal)
     % received signal after windowing and FFT
     [f, received_fft] = LoRa_demod_1(received_signal(shift(i):shift(i) + chirp_len - 1), fc, SF, BW, Fs, cfo, window);
@@ -148,9 +152,37 @@ while (shift(i) + chirp_len - 1) <= length(received_signal)
         final_shift(end + 1) = shift(i);
     end
 end
-tEnds = toc(tStart);
+
 final_shift
-decoded_messages
+symbol_corr = [];
+
+% Loop through results, cross-correlate with the inputs to determine
+% closest match, then compare to determine BER
+for i = 1:length(decoded_messages)
+    fprintf('Row %d: ', i);
+    disp(decoded_messages{i}); % Display the contents of the cell
+    max_num = 0;
+
+    % Loop through each output row
+    for j = 1:3
+        switch j
+            case 1
+                symbols = symbols1;
+            case 2
+                symbols = symbols2;
+            case 3
+                symbols = symbols3;
+        end
+        correlation = abs(xcorr(symbols, decoded_messages{i}));
+
+        if max(correlation) > max_num
+            max_num = max(correlation);
+            symbol_corr(i) = j;
+        end
+    end
+end
+symbol_corr
+tEnds = toc(tStart);
 
 % END AlignTrack Trials
 % =============================================================================================
