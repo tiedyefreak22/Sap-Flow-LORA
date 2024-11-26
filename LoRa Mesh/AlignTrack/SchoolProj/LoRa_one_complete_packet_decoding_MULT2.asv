@@ -125,6 +125,23 @@ final_shift(j) = shift(i);
 [decoded_message, ~] = phy.demodulate(received_signal(final_shift(j):end));
 decoded_messages = {decoded_message(:, 1).'};
 
+
+% Initialize an existing cell array
+existingArray = {[1, 2, 3]; [4, 5]}; % Example of rows with different lengths
+
+% New row to append
+newRow = [6, 7, 8, 9];
+
+% Check if the new row already exists
+isDuplicate = any(cellfun(@(row) isequal(row, newRow), existingArray));
+
+% Append the new row if it's not a duplicate
+if (~isempty(decoded_message)) && (~any(cellfun(@(row) isequal(row, decoded_message), existingArray)))
+    existingArray{end + 1} = newRow;
+end
+
+
+
 window = "rectangular";
 tStart = tic;
 
@@ -142,10 +159,11 @@ while (shift(i) + chirp_len - 1) <= length(received_signal)
     i = i + 1;
     shift(i) = shift(i - 1) + abs(Fs * ((f2 - BW) / k));
     [decoded_message, ~] = phy.demodulate(received_signal(shift(i):end));
-    % Append the new row if it's not a duplicate
-    if (~isempty(decoded_message)) && (~any(cellfun(@(row) isequal(row, decoded_message(:, 1).'), decoded_messages)))
-        decoded_messages{end + 1} = decoded_message(:, 1).';
-        final_shift(end + 1) = shift(i);
+    if (~isempty(decoded_message))% && (~any(ismember(decoded_message(:, 1).', decoded_messages, "rows")))
+        j = j + 1;
+        %decoded_messages = [decoded_messages; decoded_message(:, 1).'];
+        decoded_message(:, 1).'
+        final_shift(j) = shift(i);
     end
 end
 tEnds = toc(tStart);
