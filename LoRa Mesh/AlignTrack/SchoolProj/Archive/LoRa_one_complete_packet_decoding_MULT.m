@@ -100,7 +100,7 @@ for trial = 1:1:trials
     % AWGN noise
     noise = noise_sigma * randn(length(signalIQtotal), 1);
     
-    % signal recieved at  LoRa gateway
+    % signal recieved at LoRa gateway
     received_signal = signalIQtotal + noise;
     %received_signal = signalIQtotal;
 

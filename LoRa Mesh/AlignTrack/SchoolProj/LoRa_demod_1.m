@@ -1,4 +1,4 @@
-function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo, window)
+function [f, Y] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo, window)
     % LoRa_demod_1 demodulates full LoRa packet
 
     % Inputs:
@@ -12,48 +12,13 @@ function [received_fft] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo, window)
         return
     end
 
-    % Step 1: Generate Reference Upchirp and Downchirp
+    % Generate Reference Downchirp
     phy = LoRaPHY(fc, SF, BW, Fs);
     dChirpsDemod  = phy.chirp(false, SF, BW, Fs, 0, cfo, 0);
-    ref_upchirp = phy.chirp(true, SF, BW, Fs, 0, cfo, 0);
-    chirp_len = length(dChirpsDemod);
-    k = BW / (chirp_len / Fs); % Chirp rate
-
-    % Step 2: Cross-Correlation for Preamble Detection
-    correlation = abs(xcorr(signal, ref_upchirp));
-    [~, peak_idx] = max(correlation); % Find the peak
-    shift = peak_idx - length(signal); % Align index with signal
-    i = 1;
-
-    while (shift + chirp_len) < length(signal)
-        % Step 3: Extract Windows, Dechirp, and Compute FFT
-        %result = signal(shift + 1:shift + chirp_len) .* dChirpsDemod;
-        %result = convolve_with_window(signal(shift + 1:shift + chirp_len), window) .* dChirpsDemod;
-        result = multiply_with_window(signal(shift + 1:shift + chirp_len), window) .* dChirpsDemod;
-
-        NFFT = 2^nextpow2(length(result));
-        Y = abs(fft(result, NFFT)) / length(result);
-        f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
-
-        [B, IX] = sort(2 * abs(Y(1:NFFT / 2 + 1))); %order the amplitudes
-        A1 = B(end); %amplitude of second peak
-        A2 = B(end - 1); %amplitude of second peak
-        f1 = f(IX(end)); %frequency of first peak
-        f2 = f(IX(end - 1)); %frequency of second peak
-
-        if (f1 == 0) && (A1 > 0.5)
-            %figure
-            %plot(f, 2 * abs(Y(1:NFFT / 2 + 1)))
-            %xlim([0 200000])
-
-            % Step 3.2: Apply FFT to dechirped signal
-            received_fft(i, :) = Y;
-            shift = shift + abs(Fs * ((f2 - BW) / k));
-            i = i + 1;
-        else
-            shift = shift + (chirp_len / 2^SF);
-        end
-    end
+    result = multiply_with_window(signal, window) .* dChirpsDemod;
+    NFFT = 2^nextpow2(length(result));
+    Y = abs(fft(result, NFFT)) / length(result);
+    f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
 end
 
 % Helper function to convolve with a specified window
