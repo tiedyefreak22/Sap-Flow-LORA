@@ -154,10 +154,11 @@ while (shift(i) + chirp_len - 1) <= length(received_signal)
 end
 
 final_shift
-symbol_corr = [];
 
 % Loop through results, cross-correlate with the inputs to determine
 % closest match, then compare to determine BER
+symbol_corr = [];
+BER = [];
 for i = 1:length(decoded_messages)
     fprintf('Row %d: ', i);
     disp(decoded_messages{i}); % Display the contents of the cell
@@ -180,8 +181,45 @@ for i = 1:length(decoded_messages)
             symbol_corr(i) = j;
         end
     end
+
+    switch symbol_corr(i)
+        case 1
+            symbols = symbols1;
+        case 2
+            symbols = symbols2;
+        case 3
+            symbols = symbols3;
+    end
+
+    % Example input and output arrays
+    binaryStrings = dec2bin(symbols);  % Input bitstream
+    binaryBitstreamStr = reshape(binaryStrings', 1, []); % Reshape into a single row
+    % Convert the binary string to a numeric array
+    inputArray = binaryBitstreamStr - '0'; % Convert characters ('0', '1') to numbers (0, 1)
+
+    binaryStrings = dec2bin(decoded_messages{i}); % Output bitstream
+    binaryBitstreamStr = reshape(binaryStrings', 1, []); % Reshape into a single row
+    % Convert the binary string to a numeric array
+    outputArray = binaryBitstreamStr - '0'; % Convert characters ('0', '1') to numbers (0, 1)
+    
+    % Ensure arrays are the same length
+    if length(inputArray) ~= length(outputArray)
+        error('Input and output arrays must have the same length.');
+    end
+    
+    % Calculate the number of bit errors
+    numErrors = sum(inputArray ~= outputArray);
+    
+    % Calculate the bit error rate
+    BER(end + 1) = numErrors / length(inputArray);
+    
+    % Display results
+    fprintf('Number of bit errors: %d\n', numErrors);
+    fprintf('Bit Error Rate (BER): %.4f\n', BER(i));
+
 end
 symbol_corr
+BER
 tEnds = toc(tStart);
 
 % END AlignTrack Trials
