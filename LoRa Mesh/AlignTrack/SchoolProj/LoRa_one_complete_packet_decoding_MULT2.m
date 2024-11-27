@@ -54,12 +54,12 @@ symbols3 = phy.encode(double(char(message3)).');
 fprintf("[encode] symbols 3:\n");
 disp(symbols3);
 
-offset_time = round(max([(length(phy.modulate(symbols1)) / Fs) * 1000, (length(phy.modulate(symbols2)) / Fs) * 1000, (length(phy.modulate(symbols3)) / Fs) * 1000])); % ms
+offset_time = round(min([(length(phy.modulate(symbols1)) / Fs) * 1000, (length(phy.modulate(symbols2)) / Fs) * 1000, (length(phy.modulate(symbols3)) / Fs) * 1000])); % ms
 
 while true
     try
-        payload_offset1 = round(Fs * (randi([10, offset_time]) / 1000)); % samples
-        payload_offset2 = round(Fs * (randi([10, offset_time]) / 1000)); % offset from second signal, not first
+        payload_offset1 = round(Fs * (randi([round(offset_time / 2), offset_time]) / 1000)); % samples
+        payload_offset2 = round(Fs * (randi([round(offset_time / 2), offset_time]) / 1000)); % offset from second signal, not first
 
         % Baseband Modulation
         switch find([numel(symbols1), numel(symbols2), numel(symbols3)] == max(max([numel(symbols1), numel(symbols2), numel(symbols3)])), 1, 'first')
