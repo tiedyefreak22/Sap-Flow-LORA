@@ -224,7 +224,6 @@ for trial = 1:1:trials
             i = i + 1;
             shift(i) = shift(i - 1) + abs(Fs * ((f2 - BW) / k));
             [decoded_message, ~] = phy.demodulate(received_signal(shift(i):end));
-
             % Append the new row if it's not a duplicate
             if (~isempty(decoded_message)) && (~any(cellfun(@(row) isequal(row, decoded_message(:, 1).'), decoded_messages)))
                 decoded_messages{end + 1} = decoded_message(:, 1).';
@@ -295,11 +294,6 @@ for trial = 1:1:trials
         tEnds(window, trial) = toc(tStart);
     end
 end
-
-%% END AlignTrack Trials
-%% =============================================================================================
-%% START Plot/Display Results
-
 windows
 mean(tEnds, 2).'
 
@@ -339,5 +333,5 @@ end
 saveas(gcf,'Cumulative_SER_vs_Window.png')
 hold off
 
-%% END Plot/Display Results
+%% END AlignTrack Trials
 %% =============================================================================================
