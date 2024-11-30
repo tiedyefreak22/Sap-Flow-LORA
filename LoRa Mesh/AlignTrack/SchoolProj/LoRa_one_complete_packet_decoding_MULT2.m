@@ -104,9 +104,12 @@ for trial = 1:1:trials
     signalIQtotal = [zeros(initial_offset, 1); signalIQtotal];
 
     % spectrogram for one LoRa packet
-    % figure
-    % spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
-    % ylim([-BW / 2000000, BW / 2000000])
+    if trial == trials
+        figure
+        spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
+        ylim([-BW / 2000000, BW / 2000000])
+        saveas(gcf,'LoRa_Spectrogram.png')
+    end
 
     % AWGN noise
     noise = noise_sigma * randn(length(signalIQtotal), 1);
@@ -174,9 +177,12 @@ for trial = 1:1:trials
                 signalIQtotal = [zeros(initial_offset, 1); signalIQtotal];
             
                 % spectrogram for one LoRa packet
-                % figure
-                % spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
-                % ylim([-BW / 2000000, BW / 2000000])
+                if trial == trials
+                    figure
+                    spectrogram(signalIQtotal, 1000, 0, 1000, Fs, 'yaxis', 'centered')
+                    ylim([-BW / 2000000, BW / 2000000])
+                    saveas(gcf,'LoRa_Spectrogram.png')
+                end
             
                 % AWGN noise
                 noise = noise_sigma * randn(length(signalIQtotal), 1);
@@ -311,6 +317,7 @@ for i = 1:1:size(tEnds, 1)
     plot(x, tEnds(i, :))
     legend(windows)
 end
+saveas(gcf,'Time_vs_Window_by_Trial.png')
 hold off
 
 % Plot BER for each window by trial
@@ -322,6 +329,7 @@ for i = 1:1:size(BER, 1)
     plot(x, sum(BER(i, :, :), 3))
     legend(windows)
 end
+saveas(gcf,'BER_vs_Window_by_Trial.png')
 hold off
 
 % Plot cumulative BER for each window
@@ -333,6 +341,7 @@ for i = 1:1:size(cum_BER, 1)
     plot(x, cum_BER(i, :))
     legend(windows)
 end
+saveas(gcf,'Cumulative_BER_vs_Window.png')
 hold off
 
 % END AlignTrack Trials
