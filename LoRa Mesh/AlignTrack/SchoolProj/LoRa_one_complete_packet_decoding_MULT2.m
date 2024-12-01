@@ -60,7 +60,7 @@ tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 20;
+trials = 100;
 
 for trial = 1:1:trials
     trial
@@ -181,13 +181,10 @@ for trial = 1:1:trials
                     symbols = symbols3;
             end
 
-            % Ensure arrays are the same length
-            if length(symbols.') ~= length(decoded_messages{i})
-                error('Input and output arrays must have the same length.');
-            end
-
             % Calculate the number of symbol errors
-            numErrors = sum(symbols.' ~= decoded_messages{i});
+            uniqueToArray1 = setdiff(symbols.', decoded_messages{i});
+            uniqueToArray2 = setdiff(decoded_messages{i}, symbols.');
+            numErrors = length(uniqueToArray1) + length(uniqueToArray2);
 
             % Calculate the symbol error rate (SER)
             SER(window, trial, i) = numErrors / length(symbols.');
