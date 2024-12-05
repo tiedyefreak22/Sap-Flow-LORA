@@ -13,7 +13,7 @@ Fs = 10e6;  % sampling freq
 Ts = 2^SF / BW;   % Symbol period
 fc = 915e6;  % carrier center frequency
 Power = 14;  % Tx power 14 dB
-noise_sigma = 0;
+noise_sigma = 1;
 numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 message1 = "Hello World!";
 message2 = "Hello AlignTrack!";
@@ -55,12 +55,13 @@ disp(symbols3);
 
 offset_time = round(min([(length(phy.modulate(symbols1)) / Fs) * 1000, (length(phy.modulate(symbols2)) / Fs) * 1000, (length(phy.modulate(symbols3)) / Fs) * 1000])); % ms
 
-windows = {'rectangular', 'welch', 'sine', 'hann', 'hamming'};
+%windows = {'rectangular', 'welch', 'sine', 'hann', 'hamming'};
+windows = {'hann'};
 tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 10;
+trials = 1;
 
 for trial = 1:1:trials
     trial
@@ -121,6 +122,7 @@ for trial = 1:1:trials
         while (shift(i) + chirp_len - 1) <= length(received_signal)
             % received signal after windowing and FFT
             [f, received_fft] = LoRa_demod_1(received_signal(shift(i):shift(i) + chirp_len - 1), fc, SF, BW, Fs, cfo, string(windows(window)));
+            [~, received_fft_abs, received_fft_imag] = LoRa_demod_frft(received_signal(shift(i):shift(i) + chirp_len - 1), fc, SF, BW, Fs, cfo, string(windows(window)));
             AA = AlignTrack(received_fft);
             
             if length(AA) > 1
