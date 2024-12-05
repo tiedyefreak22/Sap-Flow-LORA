@@ -13,7 +13,7 @@ Fs = 10e6;  % sampling freq
 Ts = 2^SF / BW;   % Symbol period
 fc = 915e6;  % carrier center frequency
 Power = 14;  % Tx power 14 dB
-noise_sigma = 1;
+noise_sigma = 0;
 numPreambleSymbols = 8; % Standard LoRa preamble symbol count
 message1 = "Hello World!";
 message2 = "Hello AlignTrack!";
@@ -60,7 +60,7 @@ tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 100;
+trials = 10;
 
 for trial = 1:1:trials
     trial
@@ -152,6 +152,8 @@ for trial = 1:1:trials
         for i = 1:length(decoded_messages)
             fprintf('Row %d: ', i);
             disp(decoded_messages{i}); % Display the contents of the cell
+            [decoded_data, ~] = phy.decode(decoded_messages{i}.');
+            fprintf('Received Message: %s\n', char(decoded_data.'));
             max_num = 0;
 
             % Loop through each output row
