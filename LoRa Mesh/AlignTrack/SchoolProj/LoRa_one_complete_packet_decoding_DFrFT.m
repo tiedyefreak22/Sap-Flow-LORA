@@ -61,8 +61,8 @@ tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 100;
-a = 0:0.05:4; % value of 1 should yield same result as regular DFT
+trials = 5;
+a = 0:0.25:4; % value of 1 should yield same result as regular DFT
 
 for trial = 1:1:trials
     trial
@@ -224,37 +224,36 @@ mean(tEnds, 2).'
 % Plot time for each window by trial
 figure
 hold on
-title("Time vs. Window by Trial")
-for i = 1:1:size(tEnds, 1)
-    x = 1:1:trials;
-    plot(x, tEnds(i, :))
-    %legend(windows)
+title("Time vs. Alpha by Trial")
+for i = 1:1:size(tEnds, 2)
+    x = a;
+    y = tEnds(:, i);
+    plot(x, y)
+    %legend(i)
 end
-%saveas(gcf,'Time_vs_Window_by_Trial.png')
+saveas(gcf,'Time_vs_Alpha_by_Trial.png')
 hold off
 
-% Plot SER for each window by trial
-figure
-hold on
-title("SER vs. Window by Trial")
-for i = 1:1:size(SER, 1)
-    x = 1:1:trials;
-    plot(x, sum(SER(i, :, :), 3))
-    %legend(windows)
-end
-%saveas(gcf,'SER_vs_Window_by_Trial.png')
-hold off
+% % Plot SER for each window by trial
+% figure
+% hold on
+% title("SER vs. Alpha by Trial")
+% for i = 1:1:size(SER, 2)
+%     x = 1:1:trials;
+%     plot(x, sum(SER(i, :, :), 3))
+%     %legend(windows)
+% end
+% %saveas(gcf,'SER_vs_Window_by_Trial.png')
+% hold off
 
 % Plot cumulative SER for each window
 figure
 hold on
-title("Cumulative SER vs. Window")
-for i = 1:1:size(cum_SER, 1)
-    x = 1:1:trials;
-    plot(x, cum_SER(i, :))
-    %legend(windows)
-end
-%saveas(gcf,'Cumulative_SER_vs_Window.png')
+title("Avg Cumulative SER vs. Alpha")
+x = a;
+y = mean(cum_SER, 2);
+plot(x, y)
+saveas(gcf,'Avg_Cumulative_SER_vs_Alpha.png')
 hold off
 
 %% END Plot/Display Results
