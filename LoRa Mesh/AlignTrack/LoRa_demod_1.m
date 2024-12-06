@@ -1,4 +1,4 @@
-function [f, Y_abs, Y_imag] = LoRa_demod_frft(signal, fc, SF, BW, Fs, cfo, window, a)
+function [f, Y] = LoRa_demod_1(signal, fc, SF, BW, Fs, cfo, window)
     % LoRa_demod_1 demodulates full LoRa packet
 
     % Inputs:
@@ -16,12 +16,8 @@ function [f, Y_abs, Y_imag] = LoRa_demod_frft(signal, fc, SF, BW, Fs, cfo, windo
     phy = LoRaPHY(fc, SF, BW, Fs);
     dChirpsDemod  = phy.chirp(false, SF, BW, Fs, 0, cfo, 0);
     result = multiply_with_window(signal, window) .* dChirpsDemod;
-    % NFFT = 2^nextpow2(length(result));
-    % Y = DFPei(padarray(result, [NFFT, 0], 0, 'post').', a);
-    NFFT = length(result);
-    Y = DFPei(result.', a);
-    Y_abs = abs(Y) / length(result);
-    Y_imag = imag(Y) / length(result);
+    NFFT = 2^nextpow2(length(result));
+    Y = abs(fft(result, NFFT)) / length(result);
     f = Fs / 2 * linspace(0, 1, NFFT / 2+1);
 end
 

@@ -118,7 +118,7 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             self.upchirp = LoRaPHY.chirp(true, self.sf, self.bw, 2*self.bw, 0, self.cfo, 0);
 
             % Low Data Rate Optimization (LDRO) mode in LoRa
-            % If the chirp peird is larger than 16ms, the least significant
+            % If the chirp period is larger than 16ms, the least significant
             % two bits are considered unreliable and are neglected.
             if 2^(self.sf)/self.bw > 16e-3
                 self.ldr = 1;
@@ -292,69 +292,6 @@ classdef LoRaPHY < handle & matlab.mixin.Copyable
             if isempty(symbols_m)
                 warning('No preamble detected!');
             end
-        end
-
-        function [received_fft] = LoRa_demod_1(self,received_signal,shift)
-            % LoRa_Demodulate_Full demodulates full LoRa packet
-
-            %% Return if SF is not in the range
-            if self.sf > 12 || self.sf < 7
-                return
-            end
-            %% Demodulate
-            dChirpsDemod  = self.loramod(0,self.sf,self.bw,self.fs,-1);
-            len=length(dChirpsDemod);
-            result=received_signal(shift+1:shift+len).*dChirpsDemod;
-            fft_signal = (fft(result));% take fft window
-            received_fft=abs(fft_signal);
-        end
-
-        function [y] = loramod(self,x,SF,BW,Fs,varargin)
-            % loramod LoRa modulates a symbol vector specified by x
-            %
-            %   in:  x          1xN symbol vector
-            %                   with values {0,1,2,...,2^(SF)-1}
-            %        BW         signal bandwidth of LoRa transmisson
-            %        SF         spreading factor
-            %        Fs         sampling frequency
-            %        varargin{1} set polarity of chirp
-            %
-            %  out:  y          LoRa IQ waveform
-            if (nargin < 5)
-                error(message('comm:pskmod:numarg1'));
-            end
-            if (nargin > 6)
-                error(message('comm:pskmod:numarg2'));
-            end
-            % Check that x is a positive integer
-            if (~isreal(x) || any(any(ceil(x) ~= x)) || ~isnumeric(x))
-                error(message('comm:pskmod:xreal1'));
-            end
-            M       = 2^SF ;
-            % Check that M is a positive integer
-            if (~isreal(M) || ~isscalar(M) || M<=0 || (ceil(M)~=M) || ~isnumeric(M))
-                error(message('comm:pskmod:Mreal'));
-            end
-            % Check that x is within range
-            if ((min(min(x)) < 0) || (max(max(x)) > (M-1)))
-                error(message('comm:pskmod:xreal2'));
-            end
-            Inv = 0;
-            % Polarity of Chirp
-            if nargin == 5
-                Inv = 1 ;
-            elseif nargin == 6
-                Inv = varargin{1} ;
-            end
-            % Symbol Constants
-            Ts      = 2^SF/BW ;
-            Ns      = Fs.*M/BW ;
-            gamma   = x/Ts ;
-            beta    = BW/Ts ;
-            time    = (0:Ns-1)'.*1/Fs ;
-            freq    = mod(gamma + beta.*time,BW) ;
-            Theta   = cumtrapz(time,Inv.*freq) ;
-            y       = reshape(exp(j.*2.*pi.*Theta),numel(Theta),1) ;
         end
 
         function is_valid = parse_header(self, data)
