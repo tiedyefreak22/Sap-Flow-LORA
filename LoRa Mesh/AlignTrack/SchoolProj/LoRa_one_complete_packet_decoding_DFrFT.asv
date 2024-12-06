@@ -61,7 +61,7 @@ tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 100;
+trials = 1;
 a = 0:0.05:4; % value of 1 should yield same result as regular DFT
 
 for trial = 1:1:trials
@@ -123,7 +123,7 @@ for trial = 1:1:trials
         % point
         while (shift(i) + chirp_len - 1) <= length(received_signal)
             % received signal after windowing and FFT
-            decimation_factor = 3;
+            decimation_factor = 2;
             input_sig = decimate(received_signal(shift(i):shift(i) + chirp_len - 1), decimation_factor);
             [f, received_fft_abs, received_fft_imag] = LoRa_demod_frft(input_sig, fc, SF, BW, Fs / decimation_factor, cfo, 'hann', a(alpha));
             received_fft_abs = received_fft_abs(round(length(received_fft_abs)/2):end);
@@ -208,10 +208,6 @@ for trial = 1:1:trials
         end
         tEnds(alpha, trial) = toc(tStart);
     end
-    % figure
-    % title("SER vs. Alpha")
-    % plot(a, cum_SER(:, trial))
-    % saveas(gcf,'SER_vs_Alpha.png')
 end
 
 %% END AlignTrack Trials
@@ -228,9 +224,9 @@ title("Time vs. Window by Trial")
 for i = 1:1:size(tEnds, 1)
     x = 1:1:trials;
     plot(x, tEnds(i, :))
-    %legend(windows)
+    legend(windows)
 end
-%saveas(gcf,'Time_vs_Window_by_Trial.png')
+saveas(gcf,'Time_vs_Window_by_Trial.png')
 hold off
 
 % Plot SER for each window by trial
@@ -240,9 +236,9 @@ title("SER vs. Window by Trial")
 for i = 1:1:size(SER, 1)
     x = 1:1:trials;
     plot(x, sum(SER(i, :, :), 3))
-    %legend(windows)
+    legend(windows)
 end
-%saveas(gcf,'SER_vs_Window_by_Trial.png')
+saveas(gcf,'SER_vs_Window_by_Trial.png')
 hold off
 
 % Plot cumulative SER for each window
@@ -252,9 +248,9 @@ title("Cumulative SER vs. Window")
 for i = 1:1:size(cum_SER, 1)
     x = 1:1:trials;
     plot(x, cum_SER(i, :))
-    %legend(windows)
+    legend(windows)
 end
-%saveas(gcf,'Cumulative_SER_vs_Window.png')
+saveas(gcf,'Cumulative_SER_vs_Window.png')
 hold off
 
 %% END Plot/Display Results

@@ -56,34 +56,39 @@ function AA = AlignTrack(received_fft)
             end
         end
     end
-    [m1, n1] = size(I);
-    % sort the index value for further processing
-    I = sort(I, 2);
-    % side lobe elimination
-    for ee = 1:1:m1
-        for kk = 1:1:length(I(ee, :))
-            if I(ee, kk) == 0
-                continue;
-            else
-                d1 = kk;
-                break;
+    if exist('I', 'var') == 1
+        [m1, n1] = size(I);
+        % sort the index value for further processing
+        I = sort(I, 2);
+        % side lobe elimination
+        for ee = 1:1:m1
+            for kk = 1:1:length(I(ee, :))
+                if I(ee, kk) == 0
+                    continue;
+                else
+                    d1 = kk;
+                    break;
+                end
             end
-        end
-        A.(sprintf('RandomVariable_%d', ee)) = I(ee, d1:end);
-        AA = A.(sprintf('RandomVariable_%d', ee));
-        issidelobe = zeros(1, length(AA));
-        for i = 1:1:length(AA)
-            for j = i + 1:1:length(AA)
-                for k = 1:1:length(AA)
-                    if AA(j) - AA(i) == AA(i) - AA(k)
-                        if k ~= j && received_fft(AA(k)) == received_fft(AA(j))
-                            issidelobe(k) = 1;
-                            issidelobe(j) = 1;
+            A.(sprintf('RandomVariable_%d', ee)) = I(ee, d1:end);
+            AA = A.(sprintf('RandomVariable_%d', ee));
+            issidelobe = zeros(1, length(AA));
+            for i = 1:1:length(AA)
+                for j = i + 1:1:length(AA)
+                    for k = 1:1:length(AA)
+                        if AA(j) - AA(i) == AA(i) - AA(k)
+                            if k ~= j && received_fft(AA(k)) == received_fft(AA(j))
+                                issidelobe(k) = 1;
+                                issidelobe(j) = 1;
+                            end
                         end
                     end
                 end
             end
+            AA = AA(issidelobe ~= 1);
         end
-        AA = AA(issidelobe ~= 1);
+    else
+        AA = [];
+        return
     end
 end
