@@ -61,7 +61,7 @@ tEnds = [];
 SER = [];
 cum_SER = [];
 new_SER = [];
-trials = 1;
+trials = 5;
 
 for trial = 1:1:trials
     trial
@@ -122,7 +122,6 @@ for trial = 1:1:trials
         while (shift(i) + chirp_len - 1) <= length(received_signal)
             % received signal after windowing and FFT
             [f, received_fft] = LoRa_demod_1(received_signal(shift(i):shift(i) + chirp_len - 1), fc, SF, BW, Fs, cfo, string(windows(window)));
-            [~, received_fft_abs, received_fft_imag] = LoRa_demod_frft(received_signal(shift(i):shift(i) + chirp_len - 1), fc, SF, BW, Fs, cfo, string(windows(window)));
             AA = AlignTrack(received_fft);
             
             if length(AA) > 1
