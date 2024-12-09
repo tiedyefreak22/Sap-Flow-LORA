@@ -41,4 +41,5 @@ function received_signal = send_receive_signal(offset_time, symbols1, symbols2, 
     
     % signal recieved at LoRa gateway
     received_signal = signalIQtotal + noise;
+    fprintf('SNR (dB): %s\n', snr(received_signal, noise));
 end
