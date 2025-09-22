@@ -517,6 +517,41 @@
 <wire x1="-0.2" y1="1" x2="0.2" y2="1" width="0.2" layer="21"/>
 <wire x1="-0.2" y1="-1" x2="0.2" y2="-1" width="0.2" layer="21"/>
 </package>
+<package name="BEADC2012X110N" urn="urn:adsk.eagle:footprint:49807562/1" library_version="18">
+<description>&lt;b&gt;FB_ILHB_0805&lt;/b&gt;&lt;br&gt;
+</description>
+<smd name="1" x="-0.85" y="0" dx="1.45" dy="1.2" layer="1" rot="R90"/>
+<smd name="2" x="0.85" y="0" dx="1.45" dy="1.2" layer="1" rot="R90"/>
+<text x="0" y="0" size="1.27" layer="25" align="center">&gt;NAME</text>
+<text x="0" y="0" size="1.27" layer="27" align="center">&gt;VALUE</text>
+<wire x1="-1.7" y1="1" x2="1.7" y2="1" width="0.05" layer="51"/>
+<wire x1="1.7" y1="1" x2="1.7" y2="-1" width="0.05" layer="51"/>
+<wire x1="1.7" y1="-1" x2="-1.7" y2="-1" width="0.05" layer="51"/>
+<wire x1="-1.7" y1="-1" x2="-1.7" y2="1" width="0.05" layer="51"/>
+<wire x1="-1" y1="0.625" x2="1" y2="0.625" width="0.1" layer="51"/>
+<wire x1="1" y1="0.625" x2="1" y2="-0.625" width="0.1" layer="51"/>
+<wire x1="1" y1="-0.625" x2="-1" y2="-0.625" width="0.1" layer="51"/>
+<wire x1="-1" y1="-0.625" x2="-1" y2="0.625" width="0.1" layer="51"/>
+<wire x1="0" y1="0.525" x2="0" y2="-0.525" width="0.2" layer="21"/>
+</package>
+<package name="INDPM115103X540N" urn="urn:adsk.eagle:footprint:49807603/1" library_version="19">
+<description>&lt;b&gt;11.5mm x 10.5mm&lt;/b&gt;&lt;br&gt;
+</description>
+<smd name="1" x="-4.75" y="0" dx="4.9" dy="3.15" layer="1" rot="R90"/>
+<smd name="2" x="4.75" y="0" dx="4.9" dy="3.15" layer="1" rot="R90"/>
+<text x="0" y="0" size="1.27" layer="25" align="center">&gt;NAME</text>
+<text x="0" y="0" size="1.27" layer="27" align="center">&gt;VALUE</text>
+<wire x1="-6.575" y1="5.4" x2="6.575" y2="5.4" width="0.05" layer="51"/>
+<wire x1="6.575" y1="5.4" x2="6.575" y2="-5.4" width="0.05" layer="51"/>
+<wire x1="6.575" y1="-5.4" x2="-6.575" y2="-5.4" width="0.05" layer="51"/>
+<wire x1="-6.575" y1="-5.4" x2="-6.575" y2="5.4" width="0.05" layer="51"/>
+<wire x1="-5.75" y1="5.15" x2="5.75" y2="5.15" width="0.1" layer="51"/>
+<wire x1="5.75" y1="5.15" x2="5.75" y2="-5.15" width="0.1" layer="51"/>
+<wire x1="5.75" y1="-5.15" x2="-5.75" y2="-5.15" width="0.1" layer="51"/>
+<wire x1="-5.75" y1="-5.15" x2="-5.75" y2="5.15" width="0.1" layer="51"/>
+<wire x1="5.75" y1="5.15" x2="-5.75" y2="5.15" width="0.2" layer="21"/>
+<wire x1="-5.75" y1="-5.15" x2="5.75" y2="-5.15" width="0.2" layer="21"/>
+</package>
 </packages>
 <packages3d>
 <package3d name="3,0" urn="urn:adsk.eagle:package:14277/1" type="box" library_version="2">
@@ -601,6 +636,18 @@
 <description>&lt;b&gt;MAKK2520H1R0M-1&lt;/b&gt;&lt;br&gt;</description>
 <packageinstances>
 <packageinstance name="MAKK2520H1R0M"/>
+</packageinstances>
+</package3d>
+<package3d name="BEADC2012X110N" urn="urn:adsk.eagle:package:49807564/1" type="box" library_version="18">
+<description>&lt;b&gt;FB_ILHB_0805&lt;/b&gt;&lt;br&gt;</description>
+<packageinstances>
+<packageinstance name="BEADC2012X110N"/>
+</packageinstances>
+</package3d>
+<package3d name="INDPM115103X540N" urn="urn:adsk.eagle:package:49807604/1" type="box" library_version="19">
+<description>&lt;b&gt;11.5mm x 10.5mm&lt;/b&gt;&lt;br&gt;</description>
+<packageinstances>
+<packageinstance name="INDPM115103X540N"/>
 </packageinstances>
 </package3d>
 </packages3d>
@@ -1707,25 +1754,6 @@ grid 2.54 mm, diameter 6 mm</description>
 <text x="2.667" y="-2.667" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 <rectangle x1="0.254" y1="-1.27" x2="0.762" y2="1.27" layer="51"/>
 </package>
-<package name="L5650M" urn="urn:adsk.eagle:footprint:22989/1" library_version="11">
-<description>&lt;b&gt;INDUCTOR&lt;/b&gt;&lt;p&gt;
-molded</description>
-<wire x1="-3.973" y1="2.983" x2="3.973" y2="2.983" width="0.0508" layer="39"/>
-<wire x1="3.973" y1="-2.983" x2="-3.973" y2="-2.983" width="0.0508" layer="39"/>
-<wire x1="-3.973" y1="-2.983" x2="-3.973" y2="2.983" width="0.0508" layer="39"/>
-<wire x1="3.973" y1="2.983" x2="3.973" y2="-2.983" width="0.0508" layer="39"/>
-<wire x1="-2.108" y1="-2.591" x2="2.083" y2="-2.591" width="0.1524" layer="51"/>
-<wire x1="2.083" y1="2.591" x2="-2.108" y2="2.591" width="0.1524" layer="51"/>
-<wire x1="2.184" y1="2.032" x2="2.184" y2="-2.032" width="0.1524" layer="51"/>
-<wire x1="-2.21" y1="2.032" x2="-2.21" y2="-2.032" width="0.1524" layer="51"/>
-<wire x1="-2.108" y1="2.591" x2="-2.108" y2="-2.591" width="0.1524" layer="51"/>
-<wire x1="2.083" y1="2.591" x2="2.083" y2="-2.591" width="0.1524" layer="51"/>
-<smd name="1" x="-2.5" y="0" dx="1.8" dy="4" layer="1"/>
-<smd name="2" x="2.5" y="0" dx="1.8" dy="4" layer="1"/>
-<text x="-1.905" y="3.175" size="1.27" layer="25">&gt;NAME</text>
-<text x="-1.905" y="-4.445" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="-0.5001" y1="-1" x2="0.5001" y2="1" layer="35"/>
-</package>
 </packages>
 <packages3d>
 <package3d name="R0603" urn="urn:adsk.eagle:package:23555/3" type="model" library_version="11">
@@ -1745,13 +1773,6 @@ molded</description>
 grid 2.54 mm, diameter 6 mm</description>
 <packageinstances>
 <packageinstance name="E2,5-6"/>
-</packageinstances>
-</package3d>
-<package3d name="L5650M" urn="urn:adsk.eagle:package:23487/2" type="model" library_version="11">
-<description>INDUCTOR
-molded</description>
-<packageinstances>
-<packageinstance name="L5650M"/>
 </packageinstances>
 </package3d>
 </packages3d>
@@ -2157,7 +2178,7 @@ design rules under a new name.</description>
 <attribute name="MOUSER_PART_NUMBER" value="" x="-5.2" y="5.3" size="1.778" layer="27" display="off"/>
 <attribute name="MOUSER_PRICE-STOCK" value="" x="-5.2" y="5.3" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R7" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="" x="-10.2" y="-2.6" smashed="yes">
+<element name="R7" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="143m" x="-10.2" y="-2.6" smashed="yes">
 <attribute name="NAME" x="-10.835" y="-1.965" size="1.27" layer="25"/>
 <attribute name="POPULARITY" value="77" x="-10.2" y="-2.6" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="R" x="-10.2" y="-2.6" size="1.778" layer="27" display="off"/>
@@ -2168,23 +2189,17 @@ design rules under a new name.</description>
 <attribute name="POPULARITY" value="77" x="-10.2" y="-6.1" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="R" x="-10.2" y="-6.1" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R9" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="" x="-10.2" y="-9.6" smashed="yes">
+<element name="R9" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="24.9k" x="-10.2" y="-9.6" smashed="yes">
 <attribute name="NAME" x="-10.835" y="-8.965" size="1.27" layer="25"/>
 <attribute name="POPULARITY" value="77" x="-10.2" y="-9.6" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="R" x="-10.2" y="-9.6" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="-10.835" y="-11.505" size="1.27" layer="27"/>
 </element>
-<element name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="" x="-10.2" y="-13.1" smashed="yes">
+<element name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="450p" x="-10.2" y="-13.1" smashed="yes">
 <attribute name="NAME" x="-10.835" y="-12.465" size="1.27" layer="25"/>
 <attribute name="POPULARITY" value="73" x="-10.2" y="-13.1" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="C" x="-10.2" y="-13.1" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="-10.835" y="-15.005" size="1.27" layer="27"/>
-</element>
-<element name="C5" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-6" package3d_urn="urn:adsk.eagle:package:23349/1" value="" x="-8.8" y="-17.5" smashed="yes">
-<attribute name="NAME" x="-6.133" y="-15.976" size="1.27" layer="25" ratio="10"/>
-<attribute name="POPULARITY" value="14" x="-8.8" y="-17.5" size="1.778" layer="27" display="off"/>
-<attribute name="SPICEPREFIX" value="C" x="-8.8" y="-17.5" size="1.778" layer="27" display="off"/>
-<attribute name="VALUE" x="-6.133" y="-20.167" size="1.27" layer="27" ratio="10"/>
 </element>
 <element name="C6" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-6" package3d_urn="urn:adsk.eagle:package:23349/1" value="100u" x="-8.8" y="-23.8" smashed="yes">
 <attribute name="NAME" x="-6.133" y="-22.276" size="1.27" layer="25" ratio="10"/>
@@ -2205,10 +2220,14 @@ design rules under a new name.</description>
 <attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Diodes-Incorporated/1N5819HW1-7-F?qs=60RJRzIpcl9ACQG7Zn63jQ%3D%3D" x="-8" y="-34.2" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="-8" y="-34.2" size="1.27" layer="25" align="center"/>
 </element>
-<element name="L1" library="rcl" library_urn="urn:adsk.eagle:library:334" package="L5650M" package3d_urn="urn:adsk.eagle:package:23487/2" value="" x="-20.3" y="-30.3" smashed="yes">
+<element name="L1" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="INDPM115103X540N" package3d_urn="urn:adsk.eagle:package:49807604/1" value="IHLP4040EDER750M5A" x="-20.3" y="-30.3" smashed="yes">
+<attribute name="DESCRIPTION" value="Fixed Inductors 75uH 20% High Temp AEC-Q200" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="5.4mm" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="Vishay" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="IHLP4040EDER750M5A" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="70-IHLP4040EDR750M5A" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Vishay-Dale/IHLP4040EDER750M5A?qs=l7cgNqFNU1jPqWkBgPPMpg%3D%3D" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="-22.205" y="-27.125" size="1.27" layer="25"/>
-<attribute name="POPULARITY" value="0" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="SPICEPREFIX" value="L" x="-20.3" y="-30.3" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="-22.205" y="-34.745" size="1.27" layer="27"/>
 </element>
 <element name="L2" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="MAKK2520H1R0M" package3d_urn="urn:adsk.eagle:package:49806030/1" value="MAKK2520H1R0M" x="-20.6" y="-37.4" smashed="yes">
@@ -2219,6 +2238,46 @@ design rules under a new name.</description>
 <attribute name="MOUSER_PART_NUMBER" value="963-MAKK2520H1R0M" x="-20.6" y="-37.4" size="1.778" layer="27" display="off"/>
 <attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=963-MAKK2520H1R0M" x="-20.6" y="-37.4" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="-20.6" y="-37.4" size="1.27" layer="25" align="center"/>
+</element>
+<element name="FB1" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="BEADC2012X110N" package3d_urn="urn:adsk.eagle:package:49807564/1" value="ILHB0805ER600V" x="-20.6" y="-40.7" smashed="yes">
+<attribute name="DESCRIPTION" value="Ferrite Beads Multi-Layer High Current 60Ohm 25% 100MHz 3A 30mOhm DCR 0805 T/R" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="1.1mm" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="Vishay" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="ILHB0805ER600V" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="70-ILHB0805ER600V" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Vishay-Dale/ILHB0805ER600V?qs=nDC8RkArV2CRAw2z9yWdfQ%3D%3D" x="-20.6" y="-40.7" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="-20.6" y="-40.7" size="1.27" layer="25" align="center"/>
+<attribute name="VALUE" x="-20.6" y="-40.7" size="1.27" layer="27" align="center"/>
+</element>
+<element name="FB2" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="BEADC2012X110N" package3d_urn="urn:adsk.eagle:package:49807564/1" value="ILHB0805ER600V" x="-24.9" y="-43" smashed="yes">
+<attribute name="DESCRIPTION" value="Ferrite Beads Multi-Layer High Current 60Ohm 25% 100MHz 3A 30mOhm DCR 0805 T/R" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="1.1mm" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="Vishay" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="ILHB0805ER600V" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="70-ILHB0805ER600V" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Vishay-Dale/ILHB0805ER600V?qs=nDC8RkArV2CRAw2z9yWdfQ%3D%3D" x="-24.9" y="-43" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="-24.9" y="-43" size="1.27" layer="25" align="center"/>
+<attribute name="VALUE" x="-24.9" y="-43" size="1.27" layer="27" align="center"/>
+</element>
+<element name="FB3" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="BEADC2012X110N" package3d_urn="urn:adsk.eagle:package:49807564/1" value="ILHB0805ER600V" x="-29.2" y="-45.3" smashed="yes">
+<attribute name="DESCRIPTION" value="Ferrite Beads Multi-Layer High Current 60Ohm 25% 100MHz 3A 30mOhm DCR 0805 T/R" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="1.1mm" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="Vishay" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="ILHB0805ER600V" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="70-ILHB0805ER600V" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Vishay-Dale/ILHB0805ER600V?qs=nDC8RkArV2CRAw2z9yWdfQ%3D%3D" x="-29.2" y="-45.3" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="-29.2" y="-45.3" size="1.27" layer="25" align="center"/>
+<attribute name="VALUE" x="-29.2" y="-45.3" size="1.27" layer="27" align="center"/>
+</element>
+<element name="C5" library="Becca-Sap-Flow-LORA" library_urn="urn:adsk.eagle:library:49048787" package="CAPAE830X1080N" package3d_urn="urn:adsk.eagle:package:49050049/1" value="UWT1E221MNL1GS" x="-31.1" y="-51.2" smashed="yes">
+<attribute name="DESCRIPTION" value="NICHICON - UWT1E221MNL1GS - ALUMINUM ELECTROLYTIC CAPACITOR 220UF 25V 20%, SMD" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="10.8mm" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="Nichicon" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="UWT1E221MNL1GS" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="647-UWT1E221MNL1GS" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Nichicon/UWT1E221MNL1GS?qs=9nXXK2icEIxMJgFBHlqiZQ%3D%3D" x="-31.1" y="-51.2" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="-31.1" y="-51.2" size="1.27" layer="25" align="center"/>
+<attribute name="VALUE" x="-31.1" y="-51.2" size="1.27" layer="27" align="center"/>
 </element>
 </elements>
 <signals>
@@ -2447,15 +2506,21 @@ design rules under a new name.</description>
 <contactref element="C4" pad="2"/>
 <contactref element="R8" pad="1"/>
 <contactref element="C7" pad="-"/>
-<contactref element="C5" pad="-"/>
 <contactref element="C6" pad="-"/>
-<wire x1="-7.53" y1="-30.1" x2="-6.5" y2="-34.2" width="0" layer="19" extent="1-1"/>
-<wire x1="-7.53" y1="-23.8" x2="-7.53" y2="-30.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-7.53" y1="-17.5" x2="-7.53" y2="-23.8" width="0" layer="19" extent="1-1"/>
-<wire x1="-9.35" y1="-13.1" x2="-7.53" y2="-17.5" width="0" layer="19" extent="1-1"/>
-<wire x1="-11.05" y1="-6.1" x2="-9.35" y2="-13.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-9.17" y1="1.49" x2="-11.05" y2="-6.1" width="0" layer="19" extent="1-1"/>
-<wire x1="12" y1="6" x2="-9.17" y2="1.49" width="0" layer="19" extent="1-1"/>
+<contactref element="C5" pad="2"/>
+<wire x1="43.05" y1="34.8" x2="40" y2="48.25" width="0" layer="19" extent="1-1"/>
+<wire x1="32" y1="6" x2="43.05" y2="34.8" width="0" layer="19" extent="1-1"/>
+<wire x1="22" y1="6" x2="32" y2="6" width="0" layer="19" extent="1-1"/>
+<wire x1="12" y1="6" x2="22" y2="6" width="0" layer="19" extent="1-1"/>
+<wire x1="-9.17" y1="1.49" x2="12" y2="6" width="0" layer="19" extent="1-1"/>
+<wire x1="-11.05" y1="-6.1" x2="-9.17" y2="1.49" width="0" layer="19" extent="1-1"/>
+<wire x1="-9.35" y1="-13.1" x2="-11.05" y2="-6.1" width="0" layer="19" extent="1-1"/>
+<wire x1="-7.53" y1="-23.8" x2="-9.35" y2="-13.1" width="0" layer="19" extent="1-1"/>
+<wire x1="-7.53" y1="-30.1" x2="-7.53" y2="-23.8" width="0" layer="19" extent="1-1"/>
+<wire x1="-6.5" y1="-34.2" x2="-7.53" y2="-30.1" width="0" layer="19" extent="1-1"/>
+<wire x1="-27.55" y1="-51.2" x2="-6.5" y2="-34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="10.55" y1="34.8" x2="12" y2="6" width="0" layer="19" extent="1-1"/>
+<wire x1="6" y1="44.21" x2="10.55" y2="34.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$3">
 <contactref element="JP3" pad="2"/>
@@ -2511,17 +2576,17 @@ design rules under a new name.</description>
 <contactref element="PS1" pad="2"/>
 <contactref element="D2" pad="1"/>
 <contactref element="L1" pad="1"/>
-<wire x1="-9.5" y1="-34.2" x2="-22.8" y2="-30.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-9.17" y1="6.57" x2="-22.8" y2="-30.3" width="0" layer="19" extent="1-1"/>
+<wire x1="-9.5" y1="-34.2" x2="-25.05" y2="-30.3" width="0" layer="19" extent="1-1"/>
+<wire x1="-9.17" y1="6.57" x2="-25.05" y2="-30.3" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$20">
 <contactref element="L1" pad="2"/>
 <contactref element="R9" pad="2"/>
-<contactref element="C5" pad="+"/>
 <contactref element="L2" pad="2"/>
-<wire x1="-17.8" y1="-30.3" x2="-19.6" y2="-37.4" width="0" layer="19" extent="1-1"/>
-<wire x1="-10.07" y1="-17.5" x2="-17.8" y2="-30.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-9.35" y1="-9.6" x2="-10.07" y2="-17.5" width="0" layer="19" extent="1-1"/>
+<contactref element="C5" pad="1"/>
+<wire x1="-19.6" y1="-37.4" x2="-34.65" y2="-51.2" width="0" layer="19" extent="1-1"/>
+<wire x1="-15.55" y1="-30.3" x2="-19.6" y2="-37.4" width="0" layer="19" extent="1-1"/>
+<wire x1="-9.35" y1="-9.6" x2="-15.55" y2="-30.3" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>
