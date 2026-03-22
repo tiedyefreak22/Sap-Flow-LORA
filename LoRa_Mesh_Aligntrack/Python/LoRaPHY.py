@@ -1,35 +1,36 @@
 from Matlab2Python import *
+from MatlabLORA import *
 
 class LoRaPHY:
     # LORAPHY LoRa physical layer implementation
     
-    rf_freq: float                       # carrier frequency
-    sf: int                              # spreading factor (7,8,9,10,11,12)
-    bw: float                            # bandwidth (125kHz 250kHz 500kHz)
-    fs: float                            # sampling frequency
-    cr: int                              # code rate: (1:4/5 2:4/6 3:4/7 4:4/8)
-    payload_len: int                     # payload length
-    has_header: bool                     # explicit header: 1, implicit header: 0
-    crc: bool                            # crc = 1 if CRC Check is enabled else 0
-    ldr: bool                            # ldr = 1 if Low Data Rate Optimization is enabled else 0
-    whitening_seq: list[int]             # whitening sequence
-    crc_generator: list[int]             # CRC generator with polynomial x^16+x^12+x^5+1
+    rf_freq:                float        # carrier frequency
+    sf:                     int          # spreading factor (7,8,9,10,11,12)
+    bw:                     float        # bandwidth (125kHz 250kHz 500kHz)
+    fs:                     float        # sampling frequency
+    cr:                     int          # code rate: (1:4/5 2:4/6 3:4/7 4:4/8)
+    payload_len:            int          # payload length
+    has_header:             bool         # explicit header: 1, implicit header: 0
+    crc:                    bool         # crc = 1 if CRC Check is enabled else 0
+    ldr:                    bool         # ldr = 1 if Low Data Rate Optimization is enabled else 0
+    whitening_seq:          list[int]    # whitening sequence
+    crc_generator:          list[int]    # CRC generator with polynomial x^16+x^12+x^5+1
     header_checksum_matrix: list[int]    # we use a 12 x 5 matrix to calculate header checksum
-    preamble_len: int                    # preamble length
+    preamble_len:           int          # preamble length
 
-    sig: list[int]                       # input baseband signal
-    downchirp: list[int]                 # ideal chirp with decreasing frequency from B/2 to -B/2
-    upchirp: list[int]                   # ideal chirp with increasing frequency from -B/2 to B/2
-    sample_num: int                      # number of sample points per symbol
-    bin_num: int                         # number of bins after FFT (with zero padding)
-    zero_padding_ratio: int              # FFT zero padding ratio
-    fft_len: int                         # FFT size
-    preamble_bin: int                    # reference bin in current decoding window, used to eliminate CFO
-    cfo: float                           # carrier frequency offset
+    sig:                    list[int]    # input baseband signal
+    downchirp:              list[int]    # ideal chirp with decreasing frequency from B/2 to -B/2
+    upchirp:                list[int]    # ideal chirp with increasing frequency from -B/2 to B/2
+    sample_num:             int          # number of sample points per symbol
+    bin_num:                int          # number of bins after FFT (with zero padding)
+    zero_padding_ratio:     int          # FFT zero padding ratio
+    fft_len:                int          # FFT size
+    preamble_bin:           int          # reference bin in current decoding window, used to eliminate CFO
+    cfo:                    float        # carrier frequency offset
     
-    fast_mode: bool                      # set `true` for fast execution (ignore low-pass filter)
-    is_debug: bool                       # set `true` for debug information
-    hamming_decoding_en: bool            # enable hamming decoding
+    fast_mode:              bool         # set `true` for fast execution (ignore low-pass filter)
+    is_debug:               bool         # set `true` for debug information
+    hamming_decoding_en:    bool         # enable hamming decoding
 
     def __init__(self, rf_freq, sf, bw, fs):
         # LORAPHY Construct an instance of this class
@@ -70,7 +71,7 @@ class LoRaPHY:
             [0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1],
             ])
 
-        self.crc_generator = lambda msg: CRCGenerator('Polynomial', 'X^16 + X^12 + X^5 + 1', msg)
+        self.crc_generator = lambda msg: CRCGenerator(msg, Polynomial = 'X^16 + X^12 + X^5 + 1')
 
         self.preamble_len = 6
 
@@ -1377,6 +1378,6 @@ if __name__ == "__main__":
     phy = LoRaPHY(rf_freq, sf, bw, fs)
     phy.has_header = 1 # explicit header mode
     symbols = [2541, 1153, 673, 2397, 1189, 3509, 41, 3089, 3237, 3917, 2729, 2765, 1417, 2833, 1389, 801, 3197, 345, 961, 745, 3101, 297, 1893, 469]
-    [data, checksum] = phy.decode(symbols)
+    data, checksum = phy.decode(symbols)
     disp(data) # CODE: 09 90 40 01 02 03 04 05 06 07 08 09 BA 2E
     disp(checksum)
